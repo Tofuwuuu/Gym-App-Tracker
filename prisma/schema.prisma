@@ -1,0 +1,209 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MuscleGroup {
+  CHEST
+  BACK
+  SHOULDERS
+  BICEPS
+  TRICEPS
+  FOREARMS
+  CORE
+  QUADS
+  HAMSTRINGS
+  GLUTES
+  CALVES
+  FULL_BODY
+  OTHER
+}
+
+enum Equipment {
+  BARBELL
+  DUMBBELL
+  MACHINE
+  CABLE
+  BODYWEIGHT
+  KETTLEBELL
+  BAND
+  OTHER
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  username      String?   @unique
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts         Account[]
+  sessions         Session[]
+  routines         Routine[]
+  workouts         Workout[]
+  customExercises  Exercise[]     @relation("CustomExercises")
+  followers        Follow[]       @relation("Following")
+  following        Follow[]       @relation("Follower")
+  workoutLikes     WorkoutLike[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Exercise {
+  id          String      @id @default(cuid())
+  name        String
+  muscleGroup MuscleGroup
+  equipment   Equipment   @default(OTHER)
+  isCustom    Boolean     @default(false)
+  createdById String?
+  createdAt   DateTime    @default(now())
+
+  createdBy        User?             @relation("CustomExercises", fields: [createdById], references: [id], onDelete: Cascade)
+  routineExercises RoutineExercise[]
+  workoutExercises WorkoutExercise[]
+
+  @@index([name])
+  @@index([muscleGroup])
+  @@index([createdById])
+}
+
+model Routine {
+  id        String   @id @default(cuid())
+  name      String
+  notes     String?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercises RoutineExercise[]
+  workouts  Workout[]
+
+  @@index([userId])
+}
+
+model RoutineExercise {
+  id         String @id @default(cuid())
+  routineId  String
+  exerciseId String
+  order      Int
+  targetSets Int    @default(3)
+  targetReps Int    @default(10)
+
+  routine  Routine  @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([routineId])
+}
+
+model Workout {
+  id        String    @id @default(cuid())
+  userId    String
+  routineId String?
+  notes     String?
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+  createdAt DateTime  @default(now())
+
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  routine   Routine?          @relation(fields: [routineId], references: [id], onDelete: SetNull)
+  exercises WorkoutExercise[]
+  likes     WorkoutLike[]
+
+  @@index([userId])
+  @@index([startedAt])
+}
+
+model WorkoutExercise {
+  id         String @id @default(cuid())
+  workoutId  String
+  exerciseId String
+  order      Int
+
+  workout  Workout    @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise Exercise   @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  sets     SetEntry[]
+
+  @@index([workoutId])
+}
+
+model SetEntry {
+  id                String  @id @default(cuid())
+  workoutExerciseId String
+  setNumber         Int
+  weight            Float   @default(0)
+  reps              Int     @default(0)
+  rpe               Float?
+  isWarmup          Boolean @default(false)
+  completed         Boolean @default(true)
+
+  workoutExercise WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+
+  @@index([workoutExerciseId])
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followingId])
+}
+
+model WorkoutLike {
+  id        String   @id @default(cuid())
+  workoutId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  workout Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workoutId, userId])
+}
