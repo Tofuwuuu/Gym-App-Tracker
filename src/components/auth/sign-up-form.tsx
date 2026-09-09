@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { signUpAction, type ActionResult } from "@/lib/actions/auth";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,10 +15,13 @@ export function SignUpForm() {
   const [state, formAction, pending] = useActionState(signUpAction, initial);
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Create account</CardTitle>
-        <CardDescription>Start tracking workouts in under a minute.</CardDescription>
+    <Card className="w-full max-w-md border shadow-none">
+      <CardHeader className="space-y-3">
+        <BrandMark className="size-10 rounded-xl" iconClassName="size-6" />
+        <div>
+          <CardTitle>Create account</CardTitle>
+          <CardDescription>Start tracking workouts in under a minute.</CardDescription>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <form action={formAction} className="space-y-4">

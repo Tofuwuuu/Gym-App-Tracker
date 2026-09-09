@@ -34,3 +34,11 @@ export function formatDuration(startedAt: Date, endedAt: Date | null | undefined
   if (hours <= 0) return `${minutes}m`;
   return `${hours}h ${rem}m`;
 }
+
+export function formatCompactVolume(volume: number) {
+  if (volume >= 1000) {
+    const k = volume / 1000;
+    return `${k >= 10 ? Math.round(k) : Math.round(k * 10) / 10}K kg`;
+  }
+  return `${Math.round(volume)} kg`;
+}

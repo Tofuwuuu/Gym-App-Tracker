@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gym Tracker",
+  title: "Fitness Tracker",
   description:
-    "Log workouts, build routines, track progress, and follow friends — free full-stack gym tracker.",
+    "Log workouts, build routines, track progress, and follow friends — free full-stack fitness tracker.",
 };
 
 export default function RootLayout({
@@ -29,7 +29,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
+      <body className={`${geistSans.variable} ${geistMono.variable} flex min-h-full flex-col font-sans`}>
         {children}
         <Toaster />
       </body>
