@@ -1,3 +1,4 @@
+import { AuthShell } from "@/components/auth/auth-shell";
 import { SignInForm } from "@/components/auth/sign-in-form";
 
 export default async function SignInPage({
@@ -11,8 +12,8 @@ export default async function SignInPage({
   );
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white p-4">
+    <AuthShell>
       <SignInForm callbackUrl={params.callbackUrl} googleEnabled={googleEnabled} />
-    </div>
+    </AuthShell>
   );
 }

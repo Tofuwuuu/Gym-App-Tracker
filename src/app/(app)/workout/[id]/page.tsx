@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import { ActiveWorkout } from "@/components/workout/active-workout";
+import { PageHeader } from "@/components/layout/page-header";
 
 export default async function WorkoutSessionPage({
   params,
@@ -41,10 +42,11 @@ export default async function WorkoutSessionPage({
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Active workout</h1>
-        <p className="text-muted-foreground">Log sets as you go. Rest timer is below.</p>
-      </div>
+      <PageHeader
+        eyebrow="Session"
+        title="Active workout"
+        description="Log sets as you go. Rest timer sits above the list."
+      />
       <ActiveWorkout
         workoutId={workout.id}
         notes={workout.notes ?? ""}

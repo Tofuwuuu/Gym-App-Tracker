@@ -1,4 +1,3 @@
-import { PersonStanding } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function BrandMark({
@@ -11,11 +10,47 @@ export function BrandMark({
   return (
     <span
       className={cn(
-        "inline-flex size-8 items-center justify-center rounded-lg bg-fitness-soft text-fitness",
+        "inline-flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-[0_0_0_1px_color-mix(in_oklab,var(--primary)_40%,transparent)]",
         className
       )}
+      aria-hidden
     >
-      <PersonStanding className={cn("size-5", iconClassName)} strokeWidth={2.25} />
+      <svg
+        viewBox="0 0 24 24"
+        className={cn("size-5", iconClassName)}
+        fill="none"
+      >
+        <path
+          d="M3.5 9.25v5.5M7.25 6.5v11M16.75 6.5v11M20.5 9.25v5.5M7.25 12h9.5"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+        />
+      </svg>
+    </span>
+  );
+}
+
+export function Wordmark({
+  className,
+  compact = false,
+}: {
+  className?: string;
+  compact?: boolean;
+}) {
+  return (
+    <span className={cn("flex items-center gap-2.5", className)}>
+      <BrandMark className={compact ? "size-7 rounded-md" : "size-8"} iconClassName="size-4" />
+      <span className="leading-none">
+        <span className="block font-heading text-[1.35rem] font-semibold uppercase tracking-[0.08em] text-foreground">
+          Fitness
+        </span>
+        {!compact && (
+          <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.28em] text-primary">
+            Tracker
+          </span>
+        )}
+      </span>
     </span>
   );
 }

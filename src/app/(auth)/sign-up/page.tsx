@@ -1,9 +1,10 @@
+import { AuthShell } from "@/components/auth/auth-shell";
 import { SignUpForm } from "@/components/auth/sign-up-form";
 
 export default function SignUpPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white p-4">
+    <AuthShell>
       <SignUpForm />
-    </div>
+    </AuthShell>
   );
 }

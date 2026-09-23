@@ -4,14 +4,14 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const COLORS: Record<string, string> = {
-  BARBELL: "#3b82f6",
-  BODYWEIGHT: "#ec4899",
-  DUMBBELL: "#22c55e",
-  MACHINE: "#a855f7",
-  CABLE: "#f59e0b",
-  KETTLEBELL: "#14b8a6",
-  BAND: "#6366f1",
-  OTHER: "#94a3b8",
+  BARBELL: "#d6ff3f",
+  BODYWEIGHT: "#f4f4f0",
+  DUMBBELL: "#7dd3fc",
+  MACHINE: "#fb923c",
+  CABLE: "#c084fc",
+  KETTLEBELL: "#f472b6",
+  BAND: "#facc15",
+  OTHER: "#6b7280",
 };
 
 export function EquipmentUsageChart({
@@ -24,7 +24,7 @@ export function EquipmentUsageChart({
   return (
     <Card className="border shadow-none">
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium">Equipment Usage</CardTitle>
+        <CardTitle className="font-heading text-xl uppercase tracking-wide">Equipment</CardTitle>
       </CardHeader>
       <CardContent>
         {total === 0 ? (
@@ -51,7 +51,15 @@ export function EquipmentUsageChart({
                       />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      background: "#181b15",
+                      border: "1px solid #2c3126",
+                      borderRadius: 8,
+                      color: "#f3f4ee",
+                      fontSize: 12,
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>

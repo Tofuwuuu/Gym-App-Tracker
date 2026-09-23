@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Barlow_Condensed, Geist_Mono, Outfit } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
+});
+
+const barlow = Barlow_Condensed({
+  variable: "--font-barlow",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
@@ -16,7 +22,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Fitness Tracker",
   description:
-    "Log workouts, build routines, track progress, and follow friends — free full-stack fitness tracker.",
+    "Log workouts, build routines, track strength, and follow training partners.",
 };
 
 export default function RootLayout({
@@ -27,9 +33,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${outfit.variable} ${barlow.variable} ${geistMono.variable} dark h-full antialiased`}
     >
-      <body className={`${geistSans.variable} ${geistMono.variable} flex min-h-full flex-col font-sans`}>
+      <body className="flex min-h-full flex-col font-sans">
         {children}
         <Toaster />
       </body>
