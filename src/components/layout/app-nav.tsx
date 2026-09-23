@@ -87,50 +87,55 @@ function SidebarBody({
     .toUpperCase();
 
   return (
-    <div className="flex h-full flex-col gap-5">
-      <Link href="/dashboard" onClick={onNavigate} className="px-1">
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col gap-4">
+      <Link href="/dashboard" onClick={onNavigate} className="shrink-0 px-1">
         <Wordmark />
       </Link>
 
-      <Button className="w-full" render={<Link href="/workout/new" onClick={onNavigate} />}>
+      <Button
+        className="w-full shrink-0"
+        render={<Link href="/workout/new" onClick={onNavigate} />}
+      >
         <Plus className="size-4" />
         Start workout
       </Button>
 
-      <nav className="space-y-0.5">
-        {navLinks.map((item) => (
-          <NavItem
-            key={item.href}
-            {...item}
-            active={isActive(item.href)}
-            onNavigate={onNavigate}
-          />
-        ))}
-      </nav>
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto">
+        <nav className="space-y-0.5">
+          {navLinks.map((item) => (
+            <NavItem
+              key={item.href}
+              {...item}
+              active={isActive(item.href)}
+              onNavigate={onNavigate}
+            />
+          ))}
+        </nav>
 
-      <div className="space-y-0.5 px-1">
-        <p className="px-1.5 pb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          Create
-        </p>
-        <Link
-          href="/routines/new"
-          onClick={onNavigate}
-          className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <Plus className="size-3.5 text-primary" />
-          New routine
-        </Link>
-        <Link
-          href="/exercises"
-          onClick={onNavigate}
-          className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <Plus className="size-3.5 text-primary" />
-          Custom exercise
-        </Link>
+        <div className="space-y-0.5 px-1">
+          <p className="px-1.5 pb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Create
+          </p>
+          <Link
+            href="/routines/new"
+            onClick={onNavigate}
+            className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <Plus className="size-3.5 text-primary" />
+            New routine
+          </Link>
+          <Link
+            href="/exercises"
+            onClick={onNavigate}
+            className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <Plus className="size-3.5 text-primary" />
+            Custom exercise
+          </Link>
+        </div>
       </div>
 
-      <div className="mt-auto space-y-2 border-t border-border pt-3">
+      <div className="shrink-0 space-y-2 border-t border-border pt-3">
         {username ? (
           <Link
             href={`/profile/${username}`}
@@ -168,7 +173,7 @@ export function AppShell({
 }) {
   return (
     <div className="flex min-h-screen bg-background">
-      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 border-r border-border bg-sidebar px-3 py-4 md:flex">
+      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col overflow-hidden border-r border-border bg-sidebar px-3 py-4 md:flex">
         <SidebarBody username={username} name={name} />
       </aside>
 
@@ -185,7 +190,7 @@ export function AppShell({
             >
               <Menu className="size-4" />
             </SheetTrigger>
-            <SheetContent side="left" className="w-72 bg-sidebar p-4">
+            <SheetContent side="left" className="w-72 overflow-y-auto bg-sidebar p-4">
               <SheetHeader className="sr-only">
                 <SheetTitle>Navigation</SheetTitle>
               </SheetHeader>

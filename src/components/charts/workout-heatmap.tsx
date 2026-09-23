@@ -78,7 +78,7 @@ export function WorkoutHeatmap({
 
   function cellColor(count: number, inYear: boolean) {
     if (!inYear) return "bg-transparent";
-    if (count <= 0) return "bg-white/[0.06]";
+    if (count <= 0) return "bg-[#242820]";
     if (count === 1) return "bg-primary/35";
     if (count === 2) return "bg-primary/70";
     return "bg-primary";
