@@ -10,7 +10,23 @@ Log sets during a session, reuse routines, review history, and follow other lift
 
 Nothing in this repo points at a production deployment: there is no `vercel.json`, `package.json` has no `homepage`, and the [GitHub repository homepage](https://github.com/Tofuwuuu/Gym-App-Tracker) is empty. Run it locally (below) instead of looking for a public site.
 
-**Screenshots:** none are committed. When you capture the UI, put images in `docs/screenshots/` (for example `docs/screenshots/dashboard.png`). That path is a placeholder only.
+**Screenshots** below were captured from a local Docker Compose session (`docker compose up --build`, then [http://localhost:3000](http://localhost:3000)). Images live in `docs/screenshots/`.
+
+### Landing
+
+![Landing page with sign-in and sign-up](docs/screenshots/landing.png)
+
+### Dashboard
+
+![Dashboard overview after a logged workout](docs/screenshots/dashboard.png)
+
+### Routines
+
+![Saved Push Day routine](docs/screenshots/routines.png)
+
+### Progress
+
+![Progress charts and personal records](docs/screenshots/progress.png)
 
 ### Status
 
