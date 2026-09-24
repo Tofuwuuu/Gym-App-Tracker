@@ -22,7 +22,7 @@ export function EquipmentUsageChart({
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <Card className="border shadow-none">
+    <Card className="min-w-0 self-start border shadow-none">
       <CardHeader className="pb-2">
         <CardTitle className="font-heading text-xl uppercase tracking-wide">Equipment</CardTitle>
       </CardHeader>
@@ -32,8 +32,8 @@ export function EquipmentUsageChart({
             Log workouts to see equipment breakdown.
           </p>
         ) : (
-          <div className="flex flex-col items-center gap-4 sm:flex-row">
-            <div className="h-44 w-44">
+          <div className="flex flex-col gap-4">
+            <div className="mx-auto h-44 w-44 shrink-0">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -63,17 +63,17 @@ export function EquipmentUsageChart({
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="grid flex-1 grid-cols-2 gap-2 text-sm">
+            <ul className="flex list-none flex-col gap-1.5 p-0">
               {data.map((item) => (
-                <div key={item.key} className="flex items-center gap-2">
+                <li key={item.key} className="flex items-center gap-2 text-sm">
                   <span
-                    className="size-2.5 rounded-full"
+                    className="size-2.5 shrink-0 rounded-full"
                     style={{ background: COLORS[item.key] ?? COLORS.OTHER }}
                   />
                   <span className="text-muted-foreground">{item.name}</span>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         )}
       </CardContent>
