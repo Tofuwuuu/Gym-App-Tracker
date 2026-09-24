@@ -10,7 +10,17 @@ Log sets during a session, reuse routines, review history, and follow other lift
 
 Nothing in this repo points at a production deployment: there is no `vercel.json`, `package.json` has no `homepage`, and the [GitHub repository homepage](https://github.com/Tofuwuuu/Gym-App-Tracker) is empty. Run it locally (below) instead of looking for a public site.
 
-**Screenshots:** none are committed. When you capture the UI, put images in `docs/screenshots/` (for example `docs/screenshots/dashboard.png`). That path is a placeholder only.
+**Screenshots** of the local UI are in [`docs/screenshots/`](docs/screenshots/). There is still no Vercel live demo. Run the repo with Docker Compose or `npm run dev`.
+
+![Landing](docs/screenshots/landing.png)
+
+![Overview](docs/screenshots/overview.png)
+
+![Active workout](docs/screenshots/active-workout.png)
+
+![Progress](docs/screenshots/progress.png)
+
+`npm run db:seed` also creates a local demo lifter (`demo@gymtracker.local` / `gymtracker`) with about three weeks of sessions so the progress charts are not a single dot.
 
 ### Status
 
@@ -60,7 +70,7 @@ Docker Compose starts the app and Postgres. You do not need a local `.env` for t
 
 3. Open [http://localhost:3000](http://localhost:3000).
 4. Postgres is on `localhost:5432` (`postgres` / `postgres` / `gymtracker`).
-5. On boot the web container waits for Postgres, runs `prisma migrate deploy`, and seeds the exercise library.
+5. On boot the web container waits for Postgres, runs `prisma migrate deploy`, and seeds the exercise library plus a demo lifter with sample history.
 
 ```bash
 docker compose down          # stop
@@ -166,7 +176,7 @@ You can also connect Railway through the [Vercel Railway integration](https://ve
 | `npm run lint` | ESLint |
 | `npm run db:migrate` | Create and apply a Prisma migration (`prisma migrate dev`) |
 | `npm run db:push` | Push the schema without a migration file |
-| `npm run db:seed` | Seed the starter exercise library |
+| `npm run db:seed` | Seed the exercise library and demo lifter history |
 | `npm run db:studio` | Open Prisma Studio |
 | `npm run docker:up` | `docker compose up --build -d` |
 | `npm run docker:down` | Stop the Compose stack |

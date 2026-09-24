@@ -20,12 +20,23 @@ import {
 
 type SetDraft = {
   setNumber: number;
-  weight: number;
-  reps: number;
+  weight: number | null;
+  reps: number | null;
   rpe?: number | null;
   isWarmup: boolean;
   completed: boolean;
 };
+
+function optionalNumber(raw: string) {
+  if (raw.trim() === "") return null;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : null;
+}
+
+function loggedNumber(value: number | null, completed: boolean) {
+  if (value == null || (!completed && value === 0)) return null;
+  return value;
+}
 
 type ExerciseDraft = {
   key: string;
@@ -52,7 +63,13 @@ export function ActiveWorkout({
   const [exercises, setExercises] = useState<ExerciseDraft[]>(
     initialExercises.map((ex, index) => ({
       key: `${ex.exerciseId}-${index}`,
-      ...ex,
+      exerciseId: ex.exerciseId,
+      name: ex.name,
+      sets: ex.sets.map((set) => ({
+        ...set,
+        weight: loggedNumber(set.weight, set.completed),
+        reps: loggedNumber(set.reps, set.completed),
+      })),
     }))
   );
   const [notes, setNotes] = useState(initialNotes);
@@ -92,8 +109,8 @@ export function ActiveWorkout({
             ...ex.sets,
             {
               setNumber: ex.sets.length + 1,
-              weight: last?.weight ?? 0,
-              reps: last?.reps ?? 0,
+              weight: last?.weight ?? null,
+              reps: last?.reps ?? null,
               isWarmup: false,
               completed: false,
             },
@@ -115,9 +132,9 @@ export function ActiveWorkout({
         exerciseId: exercise.id,
         name: exercise.name,
         sets: [
-          { setNumber: 1, weight: 0, reps: 0, isWarmup: false, completed: false },
-          { setNumber: 2, weight: 0, reps: 0, isWarmup: false, completed: false },
-          { setNumber: 3, weight: 0, reps: 0, isWarmup: false, completed: false },
+          { setNumber: 1, weight: null, reps: null, isWarmup: false, completed: false },
+          { setNumber: 2, weight: null, reps: null, isWarmup: false, completed: false },
+          { setNumber: 3, weight: null, reps: null, isWarmup: false, completed: false },
         ],
       },
     ]);
@@ -135,7 +152,11 @@ export function ActiveWorkout({
         notes,
         exercises: exercises.map((ex) => ({
           exerciseId: ex.exerciseId,
-          sets: ex.sets,
+          sets: ex.sets.map((set) => ({
+            ...set,
+            weight: set.weight ?? 0,
+            reps: set.reps ?? 0,
+          })),
         })),
       });
       if (result?.error) toast.error(result.error);
@@ -183,19 +204,33 @@ export function ActiveWorkout({
                   type="number"
                   min={0}
                   step={0.5}
+                  inputMode="decimal"
+                  placeholder="—"
                   aria-label={`Set ${set.setNumber} weight in kilograms`}
-                  value={set.weight}
+                  value={set.weight ?? ""}
                   onChange={(e) =>
-                    updateSet(exercise.key, set.setNumber, "weight", Number(e.target.value))
+                    updateSet(
+                      exercise.key,
+                      set.setNumber,
+                      "weight",
+                      optionalNumber(e.target.value)
+                    )
                   }
                 />
                 <Input
                   type="number"
                   min={0}
+                  inputMode="numeric"
+                  placeholder="—"
                   aria-label={`Set ${set.setNumber} reps`}
-                  value={set.reps}
+                  value={set.reps ?? ""}
                   onChange={(e) =>
-                    updateSet(exercise.key, set.setNumber, "reps", Number(e.target.value))
+                    updateSet(
+                      exercise.key,
+                      set.setNumber,
+                      "reps",
+                      optionalNumber(e.target.value)
+                    )
                   }
                 />
                 <Button

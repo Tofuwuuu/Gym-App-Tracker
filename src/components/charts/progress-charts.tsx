@@ -33,7 +33,7 @@ export function VolumeChart({
       </CardHeader>
       <CardContent className="h-64">
         {data.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Complete workouts to see volume trends.</p>
+          <p className="text-sm text-muted-foreground">Log a few sessions to see trends.</p>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
@@ -70,7 +70,7 @@ export function OneRepMaxChart({
       </CardHeader>
       <CardContent className="h-64">
         {data.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No strength data yet.</p>
+          <p className="text-sm text-muted-foreground">Log a few sessions to see trends.</p>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>

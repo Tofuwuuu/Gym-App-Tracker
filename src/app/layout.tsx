@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Fitness Tracker",
+  title: "Gym Tracker",
   description:
     "Log workouts, build routines, track strength, and follow training partners.",
 };

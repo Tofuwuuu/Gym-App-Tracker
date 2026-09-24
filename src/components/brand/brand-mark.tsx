@@ -41,15 +41,13 @@ export function Wordmark({
   return (
     <span className={cn("flex items-center gap-2.5", className)}>
       <BrandMark className={compact ? "size-7 rounded-md" : "size-8"} iconClassName="size-4" />
-      <span className="leading-none">
-        <span className="block font-heading text-[1.35rem] font-semibold uppercase tracking-[0.08em] text-foreground">
-          Fitness
-        </span>
-        {!compact && (
-          <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.28em] text-primary">
-            Tracker
-          </span>
+      <span
+        className={cn(
+          "font-heading font-semibold uppercase tracking-[0.08em] text-foreground",
+          compact ? "text-lg" : "text-[1.35rem]"
         )}
+      >
+        Gym Tracker
       </span>
     </span>
   );

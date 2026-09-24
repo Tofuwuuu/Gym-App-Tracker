@@ -39,7 +39,11 @@ export function CreateExerciseForm() {
   const [state, formAction, pending] = useActionState(createCustomExercise, initial);
 
   return (
-    <form action={formAction} className="space-y-3 rounded-xl border bg-card p-4">
+    <form
+      id="custom-exercise"
+      action={formAction}
+      className="scroll-mt-20 space-y-3 rounded-xl border bg-card p-4"
+    >
       <h3 className="font-medium">Create custom exercise</h3>
       <div className="space-y-2">
         <Label htmlFor="name">Name</Label>
