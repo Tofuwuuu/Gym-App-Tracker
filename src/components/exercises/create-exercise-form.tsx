@@ -52,7 +52,7 @@ export function CreateExerciseForm() {
             id="muscleGroup"
             name="muscleGroup"
             defaultValue="OTHER"
-            className="flex h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+            className="field-select"
           >
             {muscleGroups.map((group) => (
               <option key={group} value={group}>
@@ -67,7 +67,7 @@ export function CreateExerciseForm() {
             id="equipment"
             name="equipment"
             defaultValue="OTHER"
-            className="flex h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+            className="field-select"
           >
             {equipment.map((item) => (
               <option key={item} value={item}>
@@ -78,7 +78,7 @@ export function CreateExerciseForm() {
         </div>
       </div>
       {state.error && <p className="text-sm text-destructive">{state.error}</p>}
-      {state.success && <p className="text-sm text-green-600">Exercise created.</p>}
+      {state.success && <p className="text-sm text-primary">Exercise created.</p>}
       <Button type="submit" disabled={pending}>
         {pending ? "Saving..." : "Save exercise"}
       </Button>

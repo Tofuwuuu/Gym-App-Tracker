@@ -18,6 +18,7 @@ import { startWorkout } from "@/lib/actions/gym";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { WorkoutHeatmap } from "@/components/charts/workout-heatmap";
 import { EquipmentUsageChart } from "@/components/charts/equipment-chart";
+import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -122,29 +123,28 @@ export default async function DashboardPage() {
   const recent = workouts.slice(0, 8);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
-          <p className="text-sm text-muted-foreground">
-            Your training snapshot for {year}
-          </p>
-        </div>
-        {activeWorkout ? (
-          <Button render={<Link href={`/workout/${activeWorkout.id}`} />}>
-            Resume workout
-          </Button>
-        ) : (
-          <form action={startWorkout.bind(null, undefined)}>
-            <Button type="submit">
-              <Play className="size-4" />
-              Start workout
+    <div className="space-y-5">
+      <PageHeader
+        eyebrow={`Season ${year}`}
+        title="Overview"
+        description={`${streak} day streak · training snapshot`}
+        action={
+          activeWorkout ? (
+            <Button render={<Link href={`/workout/${activeWorkout.id}`} />}>
+              Resume workout
             </Button>
-          </form>
-        )}
-      </div>
+          ) : (
+            <form action={startWorkout.bind(null, undefined)}>
+              <Button type="submit">
+                <Play className="size-4" />
+                Start workout
+              </Button>
+            </form>
+          )
+        }
+      />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Total Sets" value={String(totalSets)} icon={Dumbbell} />
         <StatCard
           label="Total Volume"
@@ -157,19 +157,19 @@ export default async function DashboardPage() {
           icon={CalendarDays}
         />
         <StatCard
-          label="Unique Exercises"
+          label="Exercises"
           value={String(uniqueExercises)}
           icon={Dumbbell}
         />
       </div>
 
-      <Card className="border shadow-none">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <div>
-            <CardTitle className="text-base font-semibold">Workout Calendar</CardTitle>
-            <p className="text-sm text-muted-foreground">Streak: {streak} days</p>
+            <CardTitle className="font-heading text-xl uppercase tracking-wide">Calendar</CardTitle>
+            <p className="text-sm text-muted-foreground">Streak {streak} days</p>
           </div>
-          <div className="rounded-md border px-2.5 py-1 text-sm text-muted-foreground">
+          <div className="rounded-md border border-border px-2.5 py-1 font-mono text-xs text-primary">
             {year}
           </div>
         </CardHeader>
@@ -183,7 +183,7 @@ export default async function DashboardPage() {
 
         <Card className="border shadow-none">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Today&apos;s focus</CardTitle>
+            <CardTitle className="font-heading text-xl uppercase tracking-wide">Today</CardTitle>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="workouts">
@@ -208,7 +208,7 @@ export default async function DashboardPage() {
                     <Link
                       key={workout.id}
                       href={`/history/${workout.id}`}
-                      className="flex items-center justify-between rounded-lg border px-3 py-2.5 hover:bg-muted/40"
+                      className="flex items-center justify-between rounded-lg border border-border bg-muted/40 px-3 py-2 hover:border-primary/40"
                     >
                       <div>
                         <p className="text-sm font-medium">

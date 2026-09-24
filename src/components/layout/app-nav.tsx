@@ -4,19 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   CalendarDays,
-  Database,
+  Dumbbell,
   History,
-  Library,
+  LayoutDashboard,
   LineChart,
   LogOut,
   Menu,
   Plus,
-  Search,
   Users,
 } from "lucide-react";
 import { signOutAction } from "@/lib/actions/auth";
 import { cn } from "@/lib/utils";
-import { BrandMark } from "@/components/brand/brand-mark";
+import { Wordmark } from "@/components/brand/brand-mark";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -26,18 +25,12 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-const quickActions = [
-  { href: "/workout/new", label: "Start Workout", icon: Plus },
-  { href: "/routines/new", label: "New Routine", icon: Plus },
-  { href: "/exercises", label: "Custom Exercise", icon: Plus },
-];
-
-const analyticsLinks = [{ href: "/progress", label: "Analytics", icon: LineChart }];
-
-const databaseLinks = [
-  { href: "/history", label: "Workouts", icon: History },
-  { href: "/routines", label: "Splits", icon: CalendarDays },
-  { href: "/exercises", label: "Exercises", icon: Library },
+const navLinks = [
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+  { href: "/history", label: "History", icon: History },
+  { href: "/routines", label: "Routines", icon: CalendarDays },
+  { href: "/exercises", label: "Exercises", icon: Dumbbell },
+  { href: "/progress", label: "Progress", icon: LineChart },
   { href: "/feed", label: "Feed", icon: Users },
 ];
 
@@ -59,13 +52,13 @@ function NavItem({
       href={href}
       onClick={onNavigate}
       className={cn(
-        "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors",
+        "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         active
-          ? "bg-accent font-medium text-accent-foreground"
-          : "text-foreground/80 hover:bg-muted"
+          ? "bg-primary/10 font-medium text-foreground"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground"
       )}
     >
-      <Icon className={cn("size-4", active ? "text-fitness" : "text-fitness/80")} />
+      <Icon className={cn("size-4", active ? "text-primary" : "text-muted-foreground")} />
       {label}
     </Link>
   );
@@ -82,47 +75,34 @@ function SidebarBody({
 }) {
   const pathname = usePathname();
   const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(`${href}/`);
+    href === "/dashboard"
+      ? pathname === "/dashboard"
+      : pathname === href || pathname.startsWith(`${href}/`);
+
+  const initials = (name ?? username ?? "FT")
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
-    <div className="flex h-full flex-col gap-5">
-      <Link
-        href="/dashboard"
-        onClick={onNavigate}
-        className="flex flex-col items-start gap-3 px-1"
-      >
-        <BrandMark className="size-12 rounded-2xl" iconClassName="size-8" />
-        <div>
-          <p className="text-xl font-semibold tracking-tight">Fitness Tracker</p>
-          <p className="text-xs text-muted-foreground">Train. Log. Progress.</p>
-        </div>
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col gap-4">
+      <Link href="/dashboard" onClick={onNavigate} className="shrink-0 px-1">
+        <Wordmark />
       </Link>
 
-      <div className="notion-panel p-2">
-        <p className="px-2.5 py-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Quick Actions
-        </p>
-        <div className="space-y-0.5">
-          {quickActions.map((item) => (
-            <Link
-              key={item.href + item.label}
-              href={item.href}
-              onClick={onNavigate}
-              className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-foreground/90 hover:bg-muted"
-            >
-              <item.icon className="size-4 text-fitness" />
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </div>
+      <Button
+        className="w-full shrink-0"
+        render={<Link href="/workout/new" onClick={onNavigate} />}
+      >
+        <Plus className="size-4" />
+        Start workout
+      </Button>
 
-      <div className="space-y-4 px-1">
-        <div>
-          <p className="mb-1 px-2.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Analytics
-          </p>
-          {analyticsLinks.map((item) => (
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto">
+        <nav className="space-y-0.5">
+          {navLinks.map((item) => (
             <NavItem
               key={item.href}
               {...item}
@@ -130,43 +110,49 @@ function SidebarBody({
               onNavigate={onNavigate}
             />
           ))}
-        </div>
+        </nav>
 
-        <div>
-          <p className="mb-1 px-2.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Databases
+        <div className="space-y-0.5 px-1">
+          <p className="px-1.5 pb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Create
           </p>
-          {databaseLinks.map((item) => (
-            <NavItem
-              key={item.href}
-              {...item}
-              active={isActive(item.href)}
-              onNavigate={onNavigate}
-            />
-          ))}
-          <NavItem
-            href="/dashboard"
-            label="Overview"
-            icon={Database}
-            active={pathname === "/dashboard"}
-            onNavigate={onNavigate}
-          />
+          <Link
+            href="/routines/new"
+            onClick={onNavigate}
+            className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <Plus className="size-3.5 text-primary" />
+            New routine
+          </Link>
+          <Link
+            href="/exercises"
+            onClick={onNavigate}
+            className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <Plus className="size-3.5 text-primary" />
+            Custom exercise
+          </Link>
         </div>
       </div>
 
-      <div className="mt-auto space-y-2 border-t pt-4">
-        {username && (
+      <div className="shrink-0 space-y-2 border-t border-border pt-3">
+        {username ? (
           <Link
             href={`/profile/${username}`}
             onClick={onNavigate}
-            className="block truncate px-2.5 text-sm text-muted-foreground hover:text-foreground"
+            className="flex items-center gap-2.5 rounded-lg px-1.5 py-1.5 hover:bg-muted"
           >
-            @{username}
-            {name ? ` · ${name}` : ""}
+            <span className="flex size-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+              {initials}
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-medium">{name ?? username}</span>
+              <span className="block truncate text-xs text-muted-foreground">@{username}</span>
+            </span>
           </Link>
-        )}
+        ) : null}
         <form action={signOutAction}>
-          <Button type="submit" variant="ghost" className="w-full justify-start gap-2">
+          <Button type="submit" variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
             <LogOut className="size-4" />
             Sign out
           </Button>
@@ -186,40 +172,36 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 flex h-12 items-center justify-between border-b bg-white/90 px-4 backdrop-blur md:px-6">
-        <Link href="/dashboard" className="flex items-center gap-2 text-sm text-muted-foreground">
-          <BrandMark className="size-6 rounded-md" iconClassName="size-4" />
-          <span>Fitness Tracker</span>
-        </Link>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="hidden text-muted-foreground sm:inline-flex">
-            <Search className="size-4" />
-            Search
-          </Button>
+    <div className="flex min-h-screen bg-background">
+      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col overflow-hidden border-r border-border bg-sidebar px-3 py-4 md:flex">
+        <SidebarBody username={username} name={name} />
+      </aside>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur md:hidden">
+          <Link href="/dashboard">
+            <Wordmark compact />
+          </Link>
           <Sheet>
             <SheetTrigger
-              render={<Button variant="outline" size="icon" className="md:hidden" />}
+              render={
+                <Button variant="outline" size="icon" aria-label="Open navigation" />
+              }
             >
               <Menu className="size-4" />
             </SheetTrigger>
-            <SheetContent side="left" className="w-80 p-4">
+            <SheetContent side="left" className="w-72 overflow-y-auto bg-sidebar p-4">
               <SheetHeader className="sr-only">
                 <SheetTitle>Navigation</SheetTitle>
               </SheetHeader>
               <SidebarBody username={username} name={name} />
             </SheetContent>
           </Sheet>
-        </div>
-      </header>
+        </header>
 
-      <div className="mx-auto flex w-full max-w-7xl gap-6 px-4 py-6 md:px-6">
-        <aside className="hidden w-64 shrink-0 md:block">
-          <div className="sticky top-20">
-            <SidebarBody username={username} name={name} />
-          </div>
-        </aside>
-        <main className="min-w-0 flex-1">{children}</main>
+        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-5 md:px-8 md:py-7">
+          {children}
+        </main>
       </div>
     </div>
   );

@@ -148,34 +148,42 @@ export function ActiveWorkout({
 
       {exercises.map((exercise) => (
         <Card key={exercise.key}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base">{exercise.name}</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle className="font-heading text-xl uppercase tracking-wide">
+              {exercise.name}
+            </CardTitle>
             <Button
               type="button"
               size="icon-sm"
               variant="ghost"
+              aria-label={`Remove ${exercise.name}`}
               onClick={() => removeExercise(exercise.key)}
             >
               <Trash2 className="size-4" />
             </Button>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="grid grid-cols-[40px_1fr_1fr_70px] gap-2 text-xs font-medium text-muted-foreground">
+          <CardContent className="space-y-1.5">
+            <div className="grid grid-cols-[32px_1fr_1fr_36px] gap-2 px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
               <span>Set</span>
-              <span>kg</span>
+              <span>Kg</span>
               <span>Reps</span>
-              <span>Done</span>
+              <span className="sr-only">Done</span>
             </div>
             {exercise.sets.map((set) => (
               <div
                 key={set.setNumber}
-                className="grid grid-cols-[40px_1fr_1fr_70px] items-center gap-2"
+                className={
+                  set.completed
+                    ? "grid grid-cols-[32px_1fr_1fr_36px] items-center gap-2 rounded-lg bg-primary/10 px-1 py-1"
+                    : "grid grid-cols-[32px_1fr_1fr_36px] items-center gap-2 px-1 py-1"
+                }
               >
-                <span className="text-sm font-medium">{set.setNumber}</span>
+                <span className="font-mono text-sm text-muted-foreground">{set.setNumber}</span>
                 <Input
                   type="number"
                   min={0}
                   step={0.5}
+                  aria-label={`Set ${set.setNumber} weight in kilograms`}
                   value={set.weight}
                   onChange={(e) =>
                     updateSet(exercise.key, set.setNumber, "weight", Number(e.target.value))
@@ -184,6 +192,7 @@ export function ActiveWorkout({
                 <Input
                   type="number"
                   min={0}
+                  aria-label={`Set ${set.setNumber} reps`}
                   value={set.reps}
                   onChange={(e) =>
                     updateSet(exercise.key, set.setNumber, "reps", Number(e.target.value))
@@ -191,16 +200,20 @@ export function ActiveWorkout({
                 />
                 <Button
                   type="button"
+                  size="icon"
                   variant={set.completed ? "default" : "outline"}
+                  aria-pressed={set.completed}
+                  aria-label={set.completed ? "Mark set incomplete" : "Mark set complete"}
+                  className="rounded-full"
                   onClick={() =>
                     updateSet(exercise.key, set.setNumber, "completed", !set.completed)
                   }
                 >
-                  {set.completed ? "✓" : "○"}
+                  {set.completed ? "✓" : ""}
                 </Button>
               </div>
             ))}
-            <Button type="button" variant="outline" size="sm" onClick={() => addSet(exercise.key)}>
+            <Button type="button" variant="ghost" size="sm" onClick={() => addSet(exercise.key)}>
               <Plus className="size-4" />
               Add set
             </Button>
@@ -234,8 +247,8 @@ export function ActiveWorkout({
         />
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Button onClick={finish} disabled={pending} className="flex-1">
+      <div className="sticky bottom-3 z-30 flex gap-2 rounded-xl border border-border bg-card/95 p-2 backdrop-blur">
+        <Button onClick={finish} disabled={pending} className="flex-1" size="lg">
           {pending ? "Saving..." : "Finish workout"}
         </Button>
         <Button

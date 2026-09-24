@@ -2,8 +2,8 @@ import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import { formatEquipment, formatMuscleGroup } from "@/lib/workout-utils";
 import { CreateExerciseForm } from "@/components/exercises/create-exercise-form";
+import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 export default async function ExercisesPage({
@@ -50,13 +50,12 @@ export default async function ExercisesPage({
   ];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Exercises</h1>
-        <p className="text-muted-foreground">
-          Built-in library plus your custom movements.
-        </p>
-      </div>
+    <div className="space-y-5">
+      <PageHeader
+        eyebrow="Library"
+        title="Exercises"
+        description="Built-in movements plus anything you add."
+      />
 
       <CreateExerciseForm />
 
@@ -70,7 +69,7 @@ export default async function ExercisesPage({
         <select
           name="muscle"
           defaultValue={muscle ?? "ALL"}
-          className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm"
+          className="field-select max-w-48"
         >
           {muscles.map((m) => (
             <option key={m} value={m}>
@@ -80,33 +79,27 @@ export default async function ExercisesPage({
         </select>
         <button
           type="submit"
-          className="h-8 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground"
+          className="h-8 rounded-lg bg-primary px-3 text-sm font-semibold text-primary-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
         >
           Filter
         </button>
       </form>
 
-      <div className="space-y-2">
+      <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
         {exercises.map((exercise) => (
-          <Card key={exercise.id}>
-            <CardContent className="flex items-center justify-between gap-3 py-3">
-              <div>
-                <p className="font-medium">{exercise.name}</p>
-                <div className="mt-1 flex flex-wrap gap-1">
-                  <Badge variant="secondary">
-                    {formatMuscleGroup(exercise.muscleGroup)}
-                  </Badge>
-                  <Badge variant="outline">
-                    {formatEquipment(exercise.equipment)}
-                  </Badge>
-                  {exercise.isCustom && <Badge>Custom</Badge>}
-                </div>
+          <div key={exercise.id} className="flex items-center justify-between gap-3 px-4 py-2.5">
+            <div>
+              <p className="font-medium">{exercise.name}</p>
+              <div className="mt-1 flex flex-wrap gap-1">
+                <Badge variant="secondary">{formatMuscleGroup(exercise.muscleGroup)}</Badge>
+                <Badge variant="outline">{formatEquipment(exercise.equipment)}</Badge>
+                {exercise.isCustom && <Badge>Custom</Badge>}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
         {exercises.length === 0 && (
-          <p className="text-sm text-muted-foreground">No exercises match your filters.</p>
+          <p className="px-4 py-6 text-sm text-muted-foreground">No exercises match your filters.</p>
         )}
       </div>
     </div>

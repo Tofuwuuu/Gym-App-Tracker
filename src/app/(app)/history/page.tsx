@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import { calculateVolume, formatDuration } from "@/lib/workout-utils";
-import { Card, CardContent } from "@/components/ui/card";
+import { PageHeader } from "@/components/layout/page-header";
 
 export default async function HistoryPage() {
   const user = await requireUser();
@@ -21,20 +21,19 @@ export default async function HistoryPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">History</h1>
-        <p className="text-muted-foreground">Every completed session.</p>
-      </div>
+    <div className="space-y-5">
+      <PageHeader
+        eyebrow="Log"
+        title="History"
+        description="Every completed session."
+      />
 
       {workouts.length === 0 ? (
-        <Card>
-          <CardContent className="py-8 text-sm text-muted-foreground">
-            No completed workouts yet.
-          </CardContent>
-        </Card>
+        <div className="surface px-4 py-8 text-sm text-muted-foreground">
+          No completed workouts yet.
+        </div>
       ) : (
-        <div className="space-y-2">
+        <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
           {workouts.map((workout) => {
             const volume = workout.exercises.reduce(
               (sum, ex) => sum + calculateVolume(ex.sets),
@@ -44,21 +43,23 @@ export default async function HistoryPage() {
               <Link
                 key={workout.id}
                 href={`/history/${workout.id}`}
-                className="block rounded-xl border bg-card p-4 hover:bg-muted/40"
+                className="flex items-start justify-between gap-3 px-4 py-3 hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-medium">
-                      {format(workout.startedAt, "EEE, MMM d · h:mm a")}
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {workout.exercises.map((ex) => ex.exercise.name).join(" · ")}
-                    </p>
-                  </div>
-                  <div className="text-right text-sm text-muted-foreground">
-                    <p>{formatDuration(workout.startedAt, workout.endedAt)}</p>
-                    <p>{Math.round(volume).toLocaleString()} kg vol</p>
-                  </div>
+                <div className="min-w-0">
+                  <p className="font-heading text-xl uppercase tracking-wide">
+                    {format(workout.startedAt, "EEE, MMM d")}
+                  </p>
+                  <p className="truncate text-sm text-muted-foreground">
+                    {workout.exercises.map((ex) => ex.exercise.name).join(" · ")}
+                  </p>
+                </div>
+                <div className="shrink-0 text-right text-sm">
+                  <p className="font-mono text-primary">
+                    {Math.round(volume).toLocaleString()} kg
+                  </p>
+                  <p className="text-muted-foreground">
+                    {formatDuration(workout.startedAt, workout.endedAt)}
+                  </p>
                 </div>
               </Link>
             );

@@ -2,8 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import { startWorkout } from "@/lib/actions/gym";
+import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function NewWorkoutPage() {
   const user = await requireUser();
@@ -21,19 +21,18 @@ export default async function NewWorkoutPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Start workout</h1>
-        <p className="text-muted-foreground">Pick a routine or start from scratch.</p>
-      </div>
+    <div className="space-y-5">
+      <PageHeader
+        eyebrow="Session"
+        title="Start workout"
+        description="Pick a routine or open an empty log."
+      />
 
       {active && (
-        <Card className="border-primary/40">
-          <CardContent className="flex items-center justify-between gap-3 py-4">
-            <p className="text-sm">You have a workout in progress.</p>
-            <Button render={<Link href={`/workout/${active.id}`} />}>Resume</Button>
-          </CardContent>
-        </Card>
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3">
+          <p className="text-sm">You have a workout in progress.</p>
+          <Button render={<Link href={`/workout/${active.id}`} />}>Resume</Button>
+        </div>
       )}
 
       <form action={startWorkout}>
@@ -42,33 +41,38 @@ export default async function NewWorkoutPage() {
         </Button>
       </form>
 
-      <div className="space-y-3">
-        <h2 className="text-lg font-medium">From routine</h2>
+      <div className="space-y-2">
+        <h2 className="font-heading text-2xl uppercase tracking-wide">From routine</h2>
         {routines.length === 0 && (
           <p className="text-sm text-muted-foreground">
             No routines yet.{" "}
-            <Link href="/routines/new" className="underline">
+            <Link href="/routines/new" className="text-primary underline-offset-4 hover:underline">
               Create one
             </Link>
           </p>
         )}
-        {routines.map((routine) => (
-          <Card key={routine.id}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">{routine.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex items-center justify-between gap-3">
-              <p className="text-sm text-muted-foreground">
-                {routine.exercises.map((ex) => ex.exercise.name).join(", ")}
-              </p>
-              <form action={startWorkout.bind(null, routine.id)}>
-                <Button type="submit" size="sm">
-                  Start
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        ))}
+        {routines.length > 0 && (
+          <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
+            {routines.map((routine) => (
+              <div
+                key={routine.id}
+                className="flex items-center justify-between gap-3 px-4 py-3"
+              >
+                <div className="min-w-0">
+                  <p className="font-heading text-xl uppercase tracking-wide">{routine.name}</p>
+                  <p className="truncate text-sm text-muted-foreground">
+                    {routine.exercises.map((ex) => ex.exercise.name).join(", ")}
+                  </p>
+                </div>
+                <form action={startWorkout.bind(null, routine.id)}>
+                  <Button type="submit" size="sm">
+                    Start
+                  </Button>
+                </form>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

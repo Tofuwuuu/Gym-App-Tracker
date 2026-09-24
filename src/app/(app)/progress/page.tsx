@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import { calculateVolume, estimateOneRepMax } from "@/lib/workout-utils";
 import { OneRepMaxChart, VolumeChart } from "@/components/charts/progress-charts";
+import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function ProgressPage() {
@@ -69,11 +70,12 @@ export default async function ProgressPage() {
   const topName = topExerciseId ? prMap.get(topExerciseId)?.name : undefined;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Progress</h1>
-        <p className="text-muted-foreground">Volume trends, estimated 1RM, and PRs.</p>
-      </div>
+    <div className="space-y-5">
+      <PageHeader
+        eyebrow="Strength"
+        title="Progress"
+        description="Volume trends, estimated 1RM, and personal records."
+      />
 
       <VolumeChart data={volumeData} />
       <OneRepMaxChart
@@ -83,7 +85,7 @@ export default async function ProgressPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Personal records</CardTitle>
+          <CardTitle className="font-heading text-xl uppercase tracking-wide">Personal records</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           {prs.length === 0 && (
@@ -92,15 +94,20 @@ export default async function ProgressPage() {
           {prs.slice(0, 12).map((pr) => (
             <div
               key={pr.name}
-              className="flex items-center justify-between rounded-md border px-3 py-2 text-sm"
+              className="flex items-center justify-between gap-3 rounded-lg bg-muted/50 px-3 py-2 text-sm"
             >
               <div>
                 <p className="font-medium">{pr.name}</p>
                 <p className="text-muted-foreground">
-                  {pr.weight} kg × {pr.reps} · est 1RM {pr.oneRepMax} kg
+                  {pr.weight} kg × {pr.reps}
                 </p>
               </div>
-              <p className="text-muted-foreground">{format(pr.date, "MMM d")}</p>
+              <div className="text-right">
+                <p className="font-heading text-xl uppercase text-primary">{pr.oneRepMax}</p>
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  est 1RM · {format(pr.date, "MMM d")}
+                </p>
+              </div>
             </div>
           ))}
         </CardContent>

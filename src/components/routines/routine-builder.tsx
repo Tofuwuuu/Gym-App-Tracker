@@ -99,7 +99,7 @@ export function RoutineBuilder({
       {exercises.map((exercise) => (
         <Card key={exercise.key}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base">{exercise.name}</CardTitle>
+            <CardTitle className="font-heading text-xl uppercase tracking-wide">{exercise.name}</CardTitle>
             <Button
               type="button"
               size="icon-sm"

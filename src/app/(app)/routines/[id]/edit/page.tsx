@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import { RoutineBuilder } from "@/components/routines/routine-builder";
+import { PageHeader } from "@/components/layout/page-header";
 
 export default async function EditRoutinePage({
   params,
@@ -32,11 +33,8 @@ export default async function EditRoutinePage({
   if (!routine) notFound();
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Edit routine</h1>
-        <p className="text-muted-foreground">{routine.name}</p>
-      </div>
+    <div className="space-y-5">
+      <PageHeader eyebrow="Templates" title="Edit routine" description={routine.name} />
       <RoutineBuilder
         routineId={routine.id}
         exerciseLibrary={exercises}

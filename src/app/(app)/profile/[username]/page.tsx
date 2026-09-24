@@ -4,7 +4,6 @@ import { formatDistanceToNow } from "date-fns";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import { FollowButton } from "@/components/social/social-actions";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function ProfilePage({
@@ -55,48 +54,66 @@ export default async function ProfilePage({
     .toUpperCase();
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardContent className="flex flex-wrap items-center gap-4 py-6">
-          <Avatar className="size-16">
-            <AvatarImage src={profile.image ?? undefined} alt={profile.name ?? username} />
-            <AvatarFallback>{initials}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {profile.name ?? `@${username}`}
-            </h1>
-            <p className="text-muted-foreground">@{username}</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {profile._count.workouts} workouts · {profile._count.followers} followers ·{" "}
-              {profile._count.following} following
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-center gap-4 border-b border-border pb-5">
+        <Avatar className="size-16">
+          <AvatarImage src={profile.image ?? undefined} alt={profile.name ?? username} />
+          <AvatarFallback className="bg-primary text-base font-semibold text-primary-foreground">
+            {initials}
+          </AvatarFallback>
+        </Avatar>
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
+            Athlete
+          </p>
+          <h1 className="font-heading text-4xl font-semibold uppercase leading-none tracking-wide">
+            {profile.name ?? username}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">@{username}</p>
+        </div>
+        {currentUser.id !== profile.id && (
+          <FollowButton username={username} isFollowing={Boolean(isFollowing)} />
+        )}
+      </div>
+
+      <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-border bg-border">
+        {[
+          [profile._count.workouts, "Workouts"],
+          [profile._count.followers, "Followers"],
+          [profile._count.following, "Following"],
+        ].map(([value, label]) => (
+          <div key={String(label)} className="bg-card px-3 py-3 text-center">
+            <p className="font-heading text-3xl uppercase text-primary">{value}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              {label}
             </p>
           </div>
-          {currentUser.id !== profile.id && (
-            <FollowButton username={username} isFollowing={Boolean(isFollowing)} />
-          )}
-        </CardContent>
-      </Card>
+        ))}
+      </div>
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-medium">Recent workouts</h2>
+      <section className="space-y-2">
+        <h2 className="font-heading text-2xl uppercase tracking-wide">Recent workouts</h2>
         {profile.workouts.length === 0 && (
           <p className="text-sm text-muted-foreground">No public workouts yet.</p>
         )}
-        {profile.workouts.map((workout) => (
-          <Card key={workout.id}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">
-                <Link href={`/history/${workout.id}`} className="hover:underline">
-                  {formatDistanceToNow(workout.startedAt, { addSuffix: true })}
-                </Link>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              {workout.exercises.map((ex) => ex.exercise.name).join(" · ")}
-            </CardContent>
-          </Card>
-        ))}
+        {profile.workouts.length > 0 && (
+        <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
+          {profile.workouts.map((workout) => (
+            <Link
+              key={workout.id}
+              href={`/history/${workout.id}`}
+              className="block px-4 py-3 hover:bg-muted/60"
+            >
+              <p className="font-heading text-xl uppercase tracking-wide">
+                {formatDistanceToNow(workout.startedAt, { addSuffix: true })}
+              </p>
+              <p className="truncate text-sm text-muted-foreground">
+                {workout.exercises.map((ex) => ex.exercise.name).join(" · ")}
+              </p>
+            </Link>
+          ))}
+        </div>
+        )}
       </section>
     </div>
   );

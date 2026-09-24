@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import { calculateVolume, formatDuration } from "@/lib/workout-utils";
 import { LikeButton } from "@/components/social/social-actions";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 
 export default async function FeedPage() {
@@ -33,27 +33,24 @@ export default async function FeedPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Feed</h1>
-        <p className="text-muted-foreground">
-          Workouts from people you follow (and your own).
-        </p>
-      </div>
+    <div className="space-y-5">
+      <PageHeader
+        eyebrow="Social"
+        title="Feed"
+        description="Workouts from people you follow, plus your own."
+      />
 
       {followingIds.length === 0 && (
-        <Card>
-          <CardContent className="space-y-3 py-6">
-            <p className="text-sm text-muted-foreground">
-              You are not following anyone yet. Open a profile and hit Follow to fill this feed.
-            </p>
-            {user.username && (
-              <Button variant="outline" render={<Link href={`/profile/${user.username}`} />}>
-                View your profile
-              </Button>
-            )}
-          </CardContent>
-        </Card>
+        <div className="surface space-y-3 px-4 py-5">
+          <p className="text-sm text-muted-foreground">
+            You are not following anyone yet. Open a profile and hit Follow to fill this feed.
+          </p>
+          {user.username && (
+            <Button variant="outline" render={<Link href={`/profile/${user.username}`} />}>
+              View your profile
+            </Button>
+          )}
+        </div>
       )}
 
       <div className="space-y-3">
@@ -64,52 +61,51 @@ export default async function FeedPage() {
           );
           const liked = workout.likes.some((like) => like.userId === user.id);
           return (
-            <Card key={workout.id}>
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center justify-between gap-2 text-base">
-                  <Link
-                    href={
-                      workout.user.username
-                        ? `/profile/${workout.user.username}`
-                        : `/history/${workout.id}`
-                    }
-                    className="hover:underline"
-                  >
-                    {workout.user.username
-                      ? `@${workout.user.username}`
-                      : workout.user.name ?? "Athlete"}
-                  </Link>
-                  <span className="text-sm font-normal text-muted-foreground">
-                    {formatDistanceToNow(workout.startedAt, { addSuffix: true })}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  {workout.exercises.map((ex) => ex.exercise.name).join(" · ")}
+            <article
+              key={workout.id}
+              className="space-y-3 rounded-xl border border-border border-l-2 border-l-primary bg-card px-4 py-3"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <Link
+                  href={
+                    workout.user.username
+                      ? `/profile/${workout.user.username}`
+                      : `/history/${workout.id}`
+                  }
+                  className="font-heading text-xl uppercase tracking-wide hover:text-primary"
+                >
+                  {workout.user.username
+                    ? `@${workout.user.username}`
+                    : workout.user.name ?? "Athlete"}
+                </Link>
+                <span className="text-xs text-muted-foreground">
+                  {formatDistanceToNow(workout.startedAt, { addSuffix: true })}
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {workout.exercises.map((ex) => ex.exercise.name).join(" · ")}
+              </p>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="font-mono text-sm text-primary">
+                  {formatDuration(workout.startedAt, workout.endedAt)} ·{" "}
+                  {Math.round(volume).toLocaleString()} kg
                 </p>
-                <div className="flex items-center justify-between">
-                  <p className="text-sm">
-                    {formatDuration(workout.startedAt, workout.endedAt)} ·{" "}
-                    {Math.round(volume).toLocaleString()} kg
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <LikeButton
-                      workoutId={workout.id}
-                      liked={liked}
-                      count={workout.likes.length}
-                    />
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      render={<Link href={`/history/${workout.id}`} />}
-                    >
-                      Details
-                    </Button>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <LikeButton
+                    workoutId={workout.id}
+                    liked={liked}
+                    count={workout.likes.length}
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    render={<Link href={`/history/${workout.id}`} />}
+                  >
+                    Details
+                  </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </article>
           );
         })}
         {workouts.length === 0 && (
