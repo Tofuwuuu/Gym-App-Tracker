@@ -100,6 +100,7 @@ function SidebarBody({
 
       <div className="flex shrink-0">
         <Button
+          nativeButton={false}
           className="min-w-0 flex-1 rounded-r-none"
           render={<Link href="/workout/new" onClick={onNavigate} />}
         >
