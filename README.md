@@ -1,16 +1,14 @@
-# Gym App Tracker
+# Gym Tracker
 
-A Strong/Hevy-style workout logger for lifters who want fast set logging, routine templates, and progress charts — a junior software-engineer portfolio project.
+A Strong/Hevy-style workout logger for lifters who want fast set logging, routine templates, and progress charts. A junior SE portfolio project.
 
 Log sets during a session, reuse routines, review history, and follow other lifters. The app runs on your machine with Docker Compose or a local Node and Postgres setup.
 
 ## Demo
 
-**Availability: local/Docker only.** There is no live demo URL.
+**Availability: local/Docker only.** There is no Vercel live demo.
 
-Nothing in this repo points at a production deployment: there is no `vercel.json`, `package.json` has no `homepage`, and the [GitHub repository homepage](https://github.com/Tofuwuuu/Gym-App-Tracker) is empty. Run it locally (below) instead of looking for a public site.
-
-**Screenshots** of the local UI are in [`docs/screenshots/`](docs/screenshots/). There is still no Vercel live demo. Run the repo with Docker Compose or `npm run dev`.
+**Screenshots** of the local UI are in [`docs/screenshots/`](docs/screenshots/).
 
 ![Landing](docs/screenshots/landing.png)
 
@@ -24,7 +22,7 @@ Nothing in this repo points at a production deployment: there is no `vercel.json
 
 ### Status
 
-- **Demo:** local Docker Compose or a native `npm run dev` server. No Vercel production URL is published.
+- **Demo:** local Docker Compose or a native `npm run dev` server.
 - **Railway:** on free and trial tiers, Postgres can sleep after inactivity. The first query after sleep may stall until the database wakes. From a laptop or from Vercel, use Railway’s public URL (`DATABASE_PUBLIC_URL`), not the private network hostname.
 - **Auth.js:** email and password work with `AUTH_SECRET` and the database alone. Google sign-in is optional and appears only when both `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set.
 

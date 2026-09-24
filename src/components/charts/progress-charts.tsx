@@ -75,7 +75,15 @@ export function OneRepMaxChart({
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
               <CartesianGrid stroke={grid} strokeDasharray="3 3" />
-              <XAxis dataKey="date" tick={axis} axisLine={false} tickLine={false} />
+              <XAxis
+                dataKey="date"
+                tick={axis}
+                axisLine={false}
+                tickLine={{ stroke: "#3a4032", strokeWidth: 1 }}
+                tickMargin={6}
+                interval={0}
+                padding={{ left: 12, right: 12 }}
+              />
               <YAxis tick={axis} axisLine={false} tickLine={false} width={40} />
               <Tooltip contentStyle={tooltipStyle} />
               <Line
