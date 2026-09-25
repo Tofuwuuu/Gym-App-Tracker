@@ -6,9 +6,13 @@ Log sets during a session, reuse routines, review history, and follow other lift
 
 ## Demo
 
-**Availability: local/Docker only.** There is no Vercel live demo.
+Live app: [https://gym-app-tracker-gamma.vercel.app](https://gym-app-tracker-gamma.vercel.app)
 
-**Screenshots** of the local UI are in [`docs/screenshots/`](docs/screenshots/).
+The app is deployed on Vercel with a Neon Postgres database. The Vercel project needs `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `AUTH_URL`, `CRON_SECRET`, and `AUTH_TRUST_HOST`. Those values stay on the host.
+
+On [/sign-in](https://gym-app-tracker-gamma.vercel.app/sign-in), **Use demo account** fills the demo login. Sign in with that. A nightly cron rebuilds only the demo user's workouts and related rows at 03:00 Manila, so the streak, history, and charts stay current.
+
+Local Docker Compose and `npm run dev` are unchanged. Screenshots of the local UI are in [`docs/screenshots/`](docs/screenshots/).
 
 ![Landing](docs/screenshots/landing.png)
 
@@ -22,7 +26,7 @@ Log sets during a session, reuse routines, review history, and follow other lift
 
 ### Status
 
-- **Demo:** local Docker Compose or a native `npm run dev` server.
+- **Demo:** [live on Vercel](https://gym-app-tracker-gamma.vercel.app). Local Docker Compose or a native `npm run dev` server still works.
 - **Railway:** on free and trial tiers, Postgres can sleep after inactivity. The first query after sleep may stall until the database wakes. From a laptop or from Vercel, use Railway’s public URL (`DATABASE_PUBLIC_URL`), not the private network hostname.
 - **Auth.js:** email and password work with `AUTH_SECRET` and the database alone. Google sign-in is optional and appears only when both `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` are set.
 
@@ -131,7 +135,7 @@ Docker Compose overrides `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `NEXTAUTH_
 
 ## Deploying to Vercel
 
-Host the Next.js app on Vercel and the database on any standard pooled Postgres. Neon through the Vercel Marketplace and Prisma Postgres both work. This repository does not include a live URL. Use the origin Vercel assigns after the first deploy.
+Host the Next.js app on Vercel and the database on Neon, or on any standard pooled Postgres. Prisma Postgres also works. The current public deployment is [https://gym-app-tracker-gamma.vercel.app](https://gym-app-tracker-gamma.vercel.app).
 
 ### Environment variables
 

@@ -10,9 +10,11 @@ import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import {
   calculateVolume,
+  consecutiveTrainingStreak,
   formatCompactVolume,
   formatDuration,
   formatEquipment,
+  localDateKey,
 } from "@/lib/workout-utils";
 import { startWorkout } from "@/lib/actions/gym";
 import { StatCard } from "@/components/dashboard/stat-card";
@@ -75,13 +77,6 @@ export default async function DashboardPage() {
     workouts.flatMap((workout) => workout.exercises.map((ex) => ex.exerciseId))
   ).size;
 
-  function localDateKey(date: Date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
   const dayCountsMap = new Map<string, number>();
   for (const workout of workouts) {
     if (workout.startedAt.getFullYear() !== year) continue;
@@ -93,17 +88,7 @@ export default async function DashboardPage() {
     count,
   }));
 
-  // Consecutive logged days ending today, or yesterday when today is empty.
-  // Sample sessions are not back-to-back, and the latest one is two days ago, so this is 0.
-  let streak = 0;
-  const cursor = new Date();
-  cursor.setHours(0, 0, 0, 0);
-  const hasToday = dayCountsMap.has(localDateKey(cursor));
-  if (!hasToday) cursor.setDate(cursor.getDate() - 1);
-  while (dayCountsMap.has(localDateKey(cursor))) {
-    streak += 1;
-    cursor.setDate(cursor.getDate() - 1);
-  }
+  const streak = consecutiveTrainingStreak(dayCountsMap.keys());
 
   const equipmentMap = new Map<string, number>();
   for (const workout of workouts) {
