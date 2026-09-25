@@ -53,10 +53,13 @@ export default async function ProgressPage() {
         }
 
         const series = oneRmSeries.get(ex.exerciseId) ?? [];
-        series.push({
-          date: format(workout.startedAt, "MMM d"),
-          oneRepMax: orm,
-        });
+        const date = format(workout.startedAt, "MMM d");
+        const last = series[series.length - 1];
+        if (last?.date === date) {
+          if (orm > last.oneRepMax) last.oneRepMax = orm;
+        } else {
+          series.push({ date, oneRepMax: orm });
+        }
         oneRmSeries.set(ex.exerciseId, series);
       }
     }

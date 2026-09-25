@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/session";
-import { calculateVolume, formatDuration } from "@/lib/workout-utils";
+import { calculateVolume, formatDuration, formatSetLoad } from "@/lib/workout-utils";
 import { LikeButton } from "@/components/social/social-actions";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -70,9 +70,7 @@ export default async function WorkoutDetailPage({
                   <span className="font-mono text-muted-foreground">{set.setNumber}</span>
                   <div className="flex items-center gap-2">
                     {set.isWarmup && <Badge variant="secondary">Warmup</Badge>}
-                    <span className="font-mono">
-                      {set.weight} kg × {set.reps}
-                    </span>
+                    <span className="font-mono">{formatSetLoad(set)}</span>
                   </div>
                 </div>
               ))}

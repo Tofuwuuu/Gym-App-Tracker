@@ -93,7 +93,8 @@ export default async function DashboardPage() {
     count,
   }));
 
-  // Simple streak: consecutive days ending today or yesterday
+  // Consecutive logged days ending today, or yesterday when today is empty.
+  // Sample sessions are not back-to-back, and the latest one is two days ago, so this is 0.
   let streak = 0;
   const cursor = new Date();
   cursor.setHours(0, 0, 0, 0);
@@ -178,7 +179,7 @@ export default async function DashboardPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 xl:grid-cols-[280px_1fr]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,17.5rem)_minmax(0,1fr)]">
         <EquipmentUsageChart data={equipmentData} />
 
         <Card className="border shadow-none">

@@ -18,6 +18,12 @@ import { cn } from "@/lib/utils";
 import { Wordmark } from "@/components/brand/brand-mark";
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -79,7 +85,7 @@ function SidebarBody({
       ? pathname === "/dashboard"
       : pathname === href || pathname.startsWith(`${href}/`);
 
-  const initials = (name ?? username ?? "FT")
+  const initials = (name ?? username ?? "GT")
     .split(" ")
     .map((part) => part[0])
     .join("")
@@ -92,13 +98,38 @@ function SidebarBody({
         <Wordmark />
       </Link>
 
-      <Button
-        className="w-full shrink-0"
-        render={<Link href="/workout/new" onClick={onNavigate} />}
-      >
-        <Plus className="size-4" />
-        Start workout
-      </Button>
+      <div className="flex shrink-0">
+        <Button
+          nativeButton={false}
+          className="min-w-0 flex-1 rounded-r-none"
+          render={<Link href="/workout/new" onClick={onNavigate} />}
+        >
+          Start workout
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                size="icon"
+                aria-label="Create"
+                className="rounded-l-none border-l border-primary-foreground/25"
+              />
+            }
+          >
+            <Plus className="size-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-44">
+            <DropdownMenuItem render={<Link href="/routines/new" onClick={onNavigate} />}>
+              New routine
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              render={<Link href="/exercises#custom-exercise" onClick={onNavigate} />}
+            >
+              Custom exercise
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
 
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto">
         <nav className="space-y-0.5">
@@ -111,28 +142,6 @@ function SidebarBody({
             />
           ))}
         </nav>
-
-        <div className="space-y-0.5 px-1">
-          <p className="px-1.5 pb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Create
-          </p>
-          <Link
-            href="/routines/new"
-            onClick={onNavigate}
-            className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 text-sm text-muted-foreground hover:text-foreground"
-          >
-            <Plus className="size-3.5 text-primary" />
-            New routine
-          </Link>
-          <Link
-            href="/exercises"
-            onClick={onNavigate}
-            className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 text-sm text-muted-foreground hover:text-foreground"
-          >
-            <Plus className="size-3.5 text-primary" />
-            Custom exercise
-          </Link>
-        </div>
       </div>
 
       <div className="shrink-0 space-y-2 border-t border-border pt-3">

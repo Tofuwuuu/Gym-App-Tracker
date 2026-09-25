@@ -25,6 +25,23 @@ export function calculateVolume(
     .reduce((sum, s) => sum + s.weight * s.reps, 0);
 }
 
+export function isUnloggedSet(set: {
+  weight: number;
+  reps: number;
+  completed?: boolean;
+}) {
+  return set.completed === false && set.weight === 0 && set.reps === 0;
+}
+
+export function formatSetLoad(set: {
+  weight: number;
+  reps: number;
+  completed?: boolean;
+}) {
+  if (isUnloggedSet(set)) return "—";
+  return `${set.weight} kg × ${set.reps}`;
+}
+
 export function formatDuration(startedAt: Date, endedAt: Date | null | undefined) {
   if (!endedAt) return "In progress";
   const ms = endedAt.getTime() - startedAt.getTime();
