@@ -4,10 +4,29 @@ import { useEffect, useState } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function RestTimer({ defaultSeconds = 90 }: { defaultSeconds?: number }) {
+export const DEFAULT_REST_SECONDS = 90;
+
+function formatClock(totalSeconds: number) {
+  const safe = Math.max(0, totalSeconds);
+  const mins = Math.floor(safe / 60);
+  const secs = safe % 60;
+  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+}
+
+export function RestTimer({
+  defaultSeconds = DEFAULT_REST_SECONDS,
+  autoStart = false,
+  variant = "inline",
+  onSkip,
+}: {
+  defaultSeconds?: number;
+  autoStart?: boolean;
+  variant?: "inline" | "dock";
+  onSkip?: () => void;
+}) {
   const [seconds, setSeconds] = useState(defaultSeconds);
   const [remaining, setRemaining] = useState(defaultSeconds);
-  const [running, setRunning] = useState(false);
+  const [running, setRunning] = useState(autoStart);
 
   useEffect(() => {
     if (!running || remaining <= 0) return;
@@ -22,6 +41,59 @@ export function RestTimer({ defaultSeconds = 90 }: { defaultSeconds?: number }) 
     const id = window.setTimeout(() => setRunning(false), 0);
     return () => window.clearTimeout(id);
   }, [running, remaining]);
+
+  if (variant === "dock") {
+    return (
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-primary/40 bg-card px-3 pt-2 md:hidden"
+        style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+        role="timer"
+        aria-label="Rest timer"
+      >
+        <div className="flex items-center gap-2">
+          <div className="min-w-16 shrink-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Rest
+            </p>
+            <p className="font-mono text-2xl font-semibold tabular-nums text-primary">
+              {formatClock(remaining)}
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 flex-1 text-base"
+            onClick={() => {
+              const next = Math.max(0, remaining - 15);
+              setRemaining(next);
+              if (next === 0) setRunning(false);
+            }}
+          >
+            -15s
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 flex-1 text-base"
+            onClick={() => setRemaining((current) => current + 15)}
+          >
+            +15s
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            className="h-11 flex-1 text-base"
+            onClick={() => {
+              setRunning(false);
+              onSkip?.();
+            }}
+          >
+            Skip
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const mins = Math.floor(remaining / 60);
   const secs = remaining % 60;
@@ -48,7 +120,7 @@ export function RestTimer({ defaultSeconds = 90 }: { defaultSeconds?: number }) 
           size="icon-sm"
           variant="outline"
           aria-label={running ? "Pause rest timer" : "Start rest timer"}
-          onClick={() => setRunning((r) => !r)}
+          onClick={() => setRunning((value) => !value)}
         >
           {running ? <Pause className="size-4" /> : <Play className="size-4" />}
         </Button>

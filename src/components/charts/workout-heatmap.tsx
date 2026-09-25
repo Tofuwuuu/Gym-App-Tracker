@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 type DayCount = { date: string; count: number };
@@ -76,6 +76,25 @@ export function WorkoutHeatmap({
     return { weeks: weekColumns, monthLabels: labels };
   }, [year, countMap]);
 
+  const scrollerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = scrollerRef.current;
+    if (!node) return;
+    if (!window.matchMedia("(max-width: 767px)").matches) return;
+
+    const todayKey = toKey(new Date());
+    const weekIndex = weeks.findIndex((week) => week.some((day) => day.key === todayKey));
+    const column = node.querySelector<HTMLElement>(`[data-week="${weekIndex}"]`);
+    if (!column) {
+      node.scrollLeft = node.scrollWidth;
+      return;
+    }
+    const scrollerRect = node.getBoundingClientRect();
+    const weekRect = column.getBoundingClientRect();
+    node.scrollLeft += weekRect.right - scrollerRect.right;
+  }, [weeks]);
+
   function cellColor(count: number, inYear: boolean) {
     if (!inYear) return "bg-transparent";
     if (count <= 0) return "bg-[#242820]";
@@ -85,13 +104,13 @@ export function WorkoutHeatmap({
   }
 
   return (
-    <div className="overflow-x-auto pb-1">
-      <div className="inline-block min-w-max">
+    <div ref={scrollerRef} className="overflow-x-auto pb-1">
+      <div className="inline-block min-w-max [--cell:16px] [--gap:3px] md:[--cell:11px]">
         <div
           className="mb-1 grid text-[10px] text-muted-foreground"
           style={{
-            gridTemplateColumns: `28px repeat(${weeks.length}, 11px)`,
-            columnGap: "3px",
+            gridTemplateColumns: `28px repeat(${weeks.length}, var(--cell))`,
+            columnGap: "var(--gap)",
           }}
         >
           <span />
@@ -107,23 +126,23 @@ export function WorkoutHeatmap({
           })}
         </div>
 
-        <div className="flex gap-[3px]">
-          <div className="flex w-7 flex-col justify-between py-[1px] text-[10px] leading-none text-muted-foreground">
-            <span className="h-[11px]" />
-            <span className="h-[11px]">Mon</span>
-            <span className="h-[11px]" />
-            <span className="h-[11px]">Wed</span>
-            <span className="h-[11px]" />
-            <span className="h-[11px]">Fri</span>
-            <span className="h-[11px]" />
+        <div className="flex gap-[var(--gap)]">
+          <div className="flex w-7 shrink-0 flex-col justify-between py-[1px] text-[10px] leading-none text-muted-foreground">
+            <span className="h-[var(--cell)]" />
+            <span className="h-[var(--cell)]">Mon</span>
+            <span className="h-[var(--cell)]" />
+            <span className="h-[var(--cell)]">Wed</span>
+            <span className="h-[var(--cell)]" />
+            <span className="h-[var(--cell)]">Fri</span>
+            <span className="h-[var(--cell)]" />
           </div>
           {weeks.map((week, wi) => (
-            <div key={wi} className="flex flex-col gap-[3px]">
+            <div key={wi} data-week={wi} className="flex shrink-0 flex-col gap-[var(--gap)]">
               {week.map((day) => (
                 <div
                   key={day.key}
                   title={day.inYear ? `${day.key}: ${day.count} workout(s)` : undefined}
-                  className={cn("size-[11px] rounded-[2px]", cellColor(day.count, day.inYear))}
+                  className={cn("size-[var(--cell)] shrink-0 rounded-[2px]", cellColor(day.count, day.inYear))}
                 />
               ))}
             </div>

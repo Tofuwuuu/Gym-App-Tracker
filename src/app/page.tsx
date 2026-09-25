@@ -105,7 +105,7 @@ export default async function LandingPage() {
           </div>
         </div>
 
-        <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-3">
+        <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-3">
           {features.map((feature) => (
             <div key={feature.title} className="bg-card px-4 py-4">
               <p className="font-mono text-xs text-primary">{feature.kicker}</p>

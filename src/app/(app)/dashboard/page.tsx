@@ -130,7 +130,9 @@ export default async function DashboardPage() {
         }
       />
 
-      <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 xl:grid-cols-4">
+      <div className="flex w-full flex-col gap-5">
+      {/* Full-width slot above the stats for a future suggested next workout card. */}
+      <div className="grid w-full grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border xl:grid-cols-4">
         <StatCard label="Total Sets" value={String(totalSets)} icon={Dumbbell} />
         <StatCard
           label="Total Volume"
@@ -254,6 +256,7 @@ export default async function DashboardPage() {
             </Tabs>
           </CardContent>
         </Card>
+      </div>
       </div>
     </div>
   );

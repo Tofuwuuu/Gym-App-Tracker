@@ -41,14 +41,17 @@ export default async function WorkoutSessionPage({
   }
 
   return (
-    <div className="space-y-4">
-      <PageHeader
-        eyebrow="Session"
-        title="Active workout"
-        description="Log sets as you go. Rest timer sits above the list."
-      />
+    <div className="md:space-y-4">
+      <div className="hidden md:block">
+        <PageHeader
+          eyebrow="Session"
+          title="Active workout"
+          description="Log sets as you go. Rest timer sits above the list."
+        />
+      </div>
       <ActiveWorkout
         workoutId={workout.id}
+        startedAt={workout.startedAt.toISOString()}
         notes={workout.notes ?? ""}
         exerciseLibrary={exerciseLibrary}
         initialExercises={workout.exercises.map((ex) => ({
