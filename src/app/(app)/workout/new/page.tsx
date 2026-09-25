@@ -31,7 +31,9 @@ export default async function NewWorkoutPage() {
       {active && (
         <div className="flex items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3">
           <p className="text-sm">You have a workout in progress.</p>
-          <Button render={<Link href={`/workout/${active.id}`} />}>Resume</Button>
+          <Button nativeButton={false} render={<Link href={`/workout/${active.id}`} />}>
+            Resume
+          </Button>
         </div>
       )}
 

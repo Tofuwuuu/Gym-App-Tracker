@@ -46,7 +46,11 @@ export default async function FeedPage() {
             You are not following anyone yet. Open a profile and hit Follow to fill this feed.
           </p>
           {user.username && (
-            <Button variant="outline" render={<Link href={`/profile/${user.username}`} />}>
+            <Button
+              nativeButton={false}
+              variant="outline"
+              render={<Link href={`/profile/${user.username}`} />}
+            >
               View your profile
             </Button>
           )}
@@ -97,6 +101,7 @@ export default async function FeedPage() {
                     count={workout.likes.length}
                   />
                   <Button
+                    nativeButton={false}
                     size="sm"
                     variant="outline"
                     render={<Link href={`/history/${workout.id}`} />}

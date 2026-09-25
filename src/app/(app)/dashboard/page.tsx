@@ -116,7 +116,7 @@ export default async function DashboardPage() {
         description={`${streak} day streak · training snapshot`}
         action={
           activeWorkout ? (
-            <Button render={<Link href={`/workout/${activeWorkout.id}`} />}>
+            <Button nativeButton={false} render={<Link href={`/workout/${activeWorkout.id}`} />}>
               Resume workout
             </Button>
           ) : (
@@ -131,132 +131,134 @@ export default async function DashboardPage() {
       />
 
       <div className="flex w-full flex-col gap-5">
-      {/* Full-width slot above the stats for a future suggested next workout card. */}
-      <div className="grid w-full grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border xl:grid-cols-4">
-        <StatCard label="Total Sets" value={String(totalSets)} icon={Dumbbell} />
-        <StatCard
-          label="Total Volume"
-          value={formatCompactVolume(totalVolume)}
-          icon={TrendingUp}
-        />
-        <StatCard
-          label="Workouts"
-          value={String(workouts.length)}
-          icon={CalendarDays}
-        />
-        <StatCard
-          label="Exercises"
-          value={String(uniqueExercises)}
-          icon={Dumbbell}
-        />
-      </div>
+        {/* Full-width slot above the stats for a future suggested next workout card. */}
+        <div className="grid w-full grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border xl:grid-cols-4">
+          <StatCard label="Total Sets" value={String(totalSets)} icon={Dumbbell} />
+          <StatCard
+            label="Total Volume"
+            value={formatCompactVolume(totalVolume)}
+            icon={TrendingUp}
+          />
+          <StatCard
+            label="Workouts"
+            value={String(workouts.length)}
+            icon={CalendarDays}
+          />
+          <StatCard
+            label="Exercises"
+            value={String(uniqueExercises)}
+            icon={Dumbbell}
+          />
+        </div>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0">
-          <div>
-            <CardTitle className="font-heading text-xl uppercase tracking-wide">Calendar</CardTitle>
-            <p className="text-sm text-muted-foreground">Streak {streak} days</p>
-          </div>
-          <div className="rounded-md border border-border px-2.5 py-1 font-mono text-xs text-primary">
-            {year}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <WorkoutHeatmap year={year} days={heatmapDays} />
-        </CardContent>
-      </Card>
-
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,17.5rem)_minmax(0,1fr)]">
-        <EquipmentUsageChart data={equipmentData} />
-
-        <Card className="border shadow-none">
-          <CardHeader className="pb-3">
-            <CardTitle className="font-heading text-xl uppercase tracking-wide">Today</CardTitle>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <div>
+              <CardTitle className="font-heading text-xl uppercase tracking-wide">Calendar</CardTitle>
+              <p className="text-sm text-muted-foreground">Streak {streak} days</p>
+            </div>
+            <div className="rounded-md border border-border px-2.5 py-1 font-mono text-xs text-primary">
+              {year}
+            </div>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="workouts">
-              <TabsList className="mb-4">
-                <TabsTrigger value="workouts">Workouts</TabsTrigger>
-                <TabsTrigger value="splits">Splits</TabsTrigger>
-                <TabsTrigger value="exercises">Exercises</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="workouts" className="space-y-2">
-                {recent.length === 0 && (
-                  <p className="py-6 text-sm text-muted-foreground">
-                    No completed workouts yet. Start one from Quick Actions.
-                  </p>
-                )}
-                {recent.map((workout) => {
-                  const volume = workout.exercises.reduce(
-                    (sum, ex) => sum + calculateVolume(ex.sets),
-                    0
-                  );
-                  return (
-                    <Link
-                      key={workout.id}
-                      href={`/history/${workout.id}`}
-                      className="flex items-center justify-between rounded-lg border border-border bg-muted/40 px-3 py-2 hover:border-primary/40"
-                    >
-                      <div>
-                        <p className="text-sm font-medium">
-                          {workout.exercises[0]?.exercise.name ?? "Workout"}
-                          {workout.exercises.length > 1
-                            ? ` +${workout.exercises.length - 1}`
-                            : ""}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDuration(workout.startedAt, workout.endedAt)} ·{" "}
-                          {Math.round(volume).toLocaleString()} kg
-                        </p>
-                      </div>
-                      <ArrowUpRight className="size-4 text-muted-foreground" />
-                    </Link>
-                  );
-                })}
-              </TabsContent>
-
-              <TabsContent value="splits" className="space-y-2">
-                {routines.length === 0 && (
-                  <div className="space-y-3 py-4">
-                    <p className="text-sm text-muted-foreground">
-                      No routines yet. Build Push / Pull / Legs templates.
-                    </p>
-                    <Button render={<Link href="/routines/new" />}>Create routine</Button>
-                  </div>
-                )}
-                {routines.map((routine) => (
-                  <div
-                    key={routine.id}
-                    className="flex items-center justify-between rounded-lg border px-3 py-2.5"
-                  >
-                    <div>
-                      <p className="text-sm font-medium">{routine.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {routine.exercises.length} exercises
-                      </p>
-                    </div>
-                    <form action={startWorkout.bind(null, routine.id)}>
-                      <Button type="submit" size="sm" variant="outline">
-                        Start
-                      </Button>
-                    </form>
-                  </div>
-                ))}
-              </TabsContent>
-
-              <TabsContent value="exercises" className="space-y-3 py-2">
-                <p className="text-sm text-muted-foreground">
-                  Browse the library or add custom movements.
-                </p>
-                <Button variant="outline" render={<Link href="/exercises" />}>
-                  Open exercise database
-                </Button>
-              </TabsContent>
-            </Tabs>
+            <WorkoutHeatmap year={year} days={heatmapDays} />
           </CardContent>
         </Card>
-      </div>
+
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,17.5rem)_minmax(0,1fr)]">
+          <EquipmentUsageChart data={equipmentData} />
+
+          <Card className="border shadow-none">
+            <CardHeader className="pb-3">
+              <CardTitle className="font-heading text-xl uppercase tracking-wide">Today</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="workouts">
+                <TabsList className="mb-4">
+                  <TabsTrigger value="workouts">Workouts</TabsTrigger>
+                  <TabsTrigger value="splits">Splits</TabsTrigger>
+                  <TabsTrigger value="exercises">Exercises</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="workouts" className="space-y-2">
+                  {recent.length === 0 && (
+                    <p className="py-6 text-sm text-muted-foreground">
+                      No completed workouts yet. Start one from Quick Actions.
+                    </p>
+                  )}
+                  {recent.map((workout) => {
+                    const volume = workout.exercises.reduce(
+                      (sum, ex) => sum + calculateVolume(ex.sets),
+                      0
+                    );
+                    return (
+                      <Link
+                        key={workout.id}
+                        href={`/history/${workout.id}`}
+                        className="flex items-center justify-between rounded-lg border border-border bg-muted/40 px-3 py-2 hover:border-primary/40"
+                      >
+                        <div>
+                          <p className="text-sm font-medium">
+                            {workout.exercises[0]?.exercise.name ?? "Workout"}
+                            {workout.exercises.length > 1
+                              ? ` +${workout.exercises.length - 1}`
+                              : ""}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatDuration(workout.startedAt, workout.endedAt)} ·{" "}
+                            {Math.round(volume).toLocaleString()} kg
+                          </p>
+                        </div>
+                        <ArrowUpRight className="size-4 text-muted-foreground" />
+                      </Link>
+                    );
+                  })}
+                </TabsContent>
+
+                <TabsContent value="splits" className="space-y-2">
+                  {routines.length === 0 && (
+                    <div className="space-y-3 py-4">
+                      <p className="text-sm text-muted-foreground">
+                        No routines yet. Build Push / Pull / Legs templates.
+                      </p>
+                      <Button nativeButton={false} render={<Link href="/routines/new" />}>
+                        Create routine
+                      </Button>
+                    </div>
+                  )}
+                  {routines.map((routine) => (
+                    <div
+                      key={routine.id}
+                      className="flex items-center justify-between rounded-lg border px-3 py-2.5"
+                    >
+                      <div>
+                        <p className="text-sm font-medium">{routine.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {routine.exercises.length} exercises
+                        </p>
+                      </div>
+                      <form action={startWorkout.bind(null, routine.id)}>
+                        <Button type="submit" size="sm" variant="outline">
+                          Start
+                        </Button>
+                      </form>
+                    </div>
+                  ))}
+                </TabsContent>
+
+                <TabsContent value="exercises" className="space-y-3 py-2">
+                  <p className="text-sm text-muted-foreground">
+                    Browse the library or add custom movements.
+                  </p>
+                  <Button nativeButton={false} variant="outline" render={<Link href="/exercises" />}>
+                    Open exercise database
+                  </Button>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

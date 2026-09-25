@@ -75,7 +75,10 @@ export function RestTimer({
             type="button"
             variant="outline"
             className="h-11 flex-1 text-base"
-            onClick={() => setRemaining((current) => current + 15)}
+            onClick={() => {
+              setRemaining((current) => current + 15);
+              setRunning(true);
+            }}
           >
             +15s
           </Button>

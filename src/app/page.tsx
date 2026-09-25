@@ -20,10 +20,12 @@ export default async function LandingPage() {
       <header className="relative z-10 flex h-16 items-center justify-between px-5 md:px-8">
         <Wordmark />
         <div className="flex items-center gap-2">
-          <Button variant="ghost" render={<Link href="/sign-in" />}>
+          <Button nativeButton={false} variant="ghost" render={<Link href="/sign-in" />}>
             Sign in
           </Button>
-          <Button render={<Link href="/sign-up" />}>Get started</Button>
+          <Button nativeButton={false} render={<Link href="/sign-up" />}>
+            Get started
+          </Button>
         </div>
       </header>
 
@@ -43,10 +45,10 @@ export default async function LandingPage() {
               Built for the session, not a blank dashboard.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Button size="lg" render={<Link href="/sign-up" />}>
+              <Button nativeButton={false} size="lg" render={<Link href="/sign-up" />}>
                 Create free account
               </Button>
-              <Button size="lg" variant="outline" render={<Link href="/sign-in" />}>
+              <Button nativeButton={false} size="lg" variant="outline" render={<Link href="/sign-in" />}>
                 Sign in
               </Button>
             </div>
