@@ -2,17 +2,13 @@
 
 A Strong/Hevy-style workout logger for lifters who want fast set logging, routine templates, and progress charts. A junior SE portfolio project.
 
-Log sets during a session, reuse routines, review history, and follow other lifters. The app runs on your machine with Docker Compose or a local Node and Postgres setup.
+Log sets during a session, reuse routines, review history, and follow other lifters. Try it live, or run it locally with Docker Compose or Node and Postgres.
 
 ## Demo
 
-Live app: [https://gym-app-tracker-gamma.vercel.app](https://gym-app-tracker-gamma.vercel.app)
+Live app: https://gym-app-tracker-gamma.vercel.app
 
-The app is deployed on Vercel with a Neon Postgres database. The Vercel project needs `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `AUTH_URL`, `CRON_SECRET`, and `AUTH_TRUST_HOST`. Those values stay on the host.
-
-On [/sign-in](https://gym-app-tracker-gamma.vercel.app/sign-in), **Use demo account** fills the demo login. Sign in with that. A nightly cron rebuilds only the demo user's workouts and related rows at 03:00 Manila, so the streak, history, and charts stay current.
-
-Local Docker Compose and `npm run dev` are unchanged. Screenshots of the local UI are in [`docs/screenshots/`](docs/screenshots/).
+On the sign-in page, tap **Use demo account**. You can log sets, build routines, and browse the charts. The demo data resets every night at 3 AM Manila time, so the streak and history stay current.
 
 ![Landing](docs/screenshots/landing.png)
 
@@ -22,12 +18,27 @@ Local Docker Compose and `npm run dev` are unchanged. Screenshots of the local U
 
 ![Progress](docs/screenshots/progress.png)
 
+![Overview on a phone](docs/screenshots/overview-390.png)
+
+Overview on a phone.
+
+![History on a phone](docs/screenshots/history-390.png)
+
+History on a phone.
+
+![Progress on a phone](docs/screenshots/progress-390.png)
+
+Progress charts on a phone.
+
+![Active workout on a phone](docs/screenshots/active-workout-390.png)
+
+Active workout with the rest timer.
+
 `npm run db:seed` also creates a local demo lifter (`demo@gymtracker.local` / `gymtracker`) with about three weeks of sessions so the progress charts are not a single dot.
 
 ### Status
 
 - **Demo:** [live on Vercel](https://gym-app-tracker-gamma.vercel.app). Local Docker Compose or a native `npm run dev` server still works.
-- **Railway:** on free and trial tiers, Postgres can sleep after inactivity. The first query after sleep may stall until the database wakes. From a laptop or from Vercel, use Railway’s public URL (`DATABASE_PUBLIC_URL`), not the private network hostname.
 - **Auth.js:** email and password work with `AUTH_SECRET` and the database alone. Google sign-in is optional and appears only when both `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` are set.
 
 ## Features
@@ -45,19 +56,19 @@ Local Docker Compose and `npm run dev` are unchanged. Screenshots of the local U
 
 Versions match `package.json`.
 
-| Layer | Tech | Intended host |
+| Layer | Tech | Host |
 | --- | --- | --- |
-| App (UI + API) | Next.js 16 (App Router), React 19, TypeScript | [Vercel](https://vercel.com) Hobby |
-| Database | PostgreSQL, Prisma 6 | Neon, Prisma Postgres, or any pooled Postgres |
-| Auth | Auth.js (NextAuth v5) — email/password, optional Google | — |
-| UI | Tailwind CSS 4, shadcn/ui | — |
-| Charts | Recharts 3 | — |
+| App (UI + API) | Next.js 16 (App Router), React 19, TypeScript | Vercel |
+| Database | PostgreSQL, Prisma 6 | Neon |
+| Auth | Auth.js (NextAuth v5), email/password, optional Google | Vercel |
+| UI | Tailwind CSS 4, shadcn/ui | Vercel |
+| Charts | Recharts 3 | Vercel |
 
 ## Setup
 
 Node.js 20+ matches the Docker image. Postgres 16 matches `docker-compose.yml`.
 
-### Option A — Docker Compose
+### Option A: Docker Compose
 
 Docker Compose starts the app and Postgres. You do not need a local `.env` for this path; the compose file injects one local database URL as both `DATABASE_URL` and `DIRECT_URL`, plus a dev `AUTH_SECRET`.
 
@@ -81,7 +92,7 @@ docker compose logs -f web   # follow app logs (or npm run docker:logs)
 npm run docker:down          # stop via the npm script
 ```
 
-### Option B — Native
+### Option B: Native
 
 1. Install Node.js 20+ and PostgreSQL 16 (or point `DATABASE_URL` and `DIRECT_URL` at a hosted Postgres).
 2. Install dependencies:
@@ -215,7 +226,6 @@ src/lib/          # auth, db, validations, server actions
 - Warmup sets are excluded from volume when `isWarmup` is set. Sets that are not completed are excluded as well.
 - Completed workouts from people you follow, plus your own completed workouts, appear on `/feed`.
 - Email/password is the default Auth.js provider. Google is registered only when both `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` are present. `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` still work when the `AUTH_GOOGLE_*` pair is unset.
-- Railway free-tier sleep is called out under [Status](#status). Budget for a cold start after idle time.
 
 ## License
 
