@@ -164,9 +164,9 @@ prisma generate && prisma migrate deploy && next build
 
 ### Demo account and nightly reset
 
-The public demo lifter is `demo@gymtracker.local` / `gymtracker`. Visitors can log sets. `vercel.json` schedules `GET /api/cron/reset-demo` daily at `0 19 * * *` (19:00 UTC, which is 03:00 in Manila).
+The public demo lifter is `demo@gymtracker.local` / `gymtracker`. Visitors can log sets. They cannot change that account's email or password, or delete it. `vercel.json` schedules `GET /api/cron/reset-demo` daily at `0 19 * * *` (19:00 UTC, which is 03:00 in Manila).
 
-That route deletes only the demo user's workouts, sets, routines, custom exercises, and follows or likes that involve the demo user, then recreates about three weeks of sessions dated from the current day. Other accounts are left alone. If the exercise library or demo user is missing, the same request creates them, so the first cron call or a manual request bootstraps a fresh database:
+That route deletes only the demo user's workouts, sets, routines, custom exercises, and follows or likes that involve the demo user, then recreates about three weeks of sessions dated from the current day. It also restores the demo user's email, name, and password, and creates the demo user again if that row is missing. Other accounts are left alone. If the exercise library or demo user is missing, the same request creates them, so the first cron call or a manual request bootstraps a fresh database:
 
 ```bash
 curl -H "Authorization: Bearer $CRON_SECRET" https://<your-domain>/api/cron/reset-demo

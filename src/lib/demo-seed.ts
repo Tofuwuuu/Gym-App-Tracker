@@ -159,21 +159,32 @@ async function seedExerciseLibrary(prisma: PrismaClient) {
 
 async function ensureDemoUser(prisma: PrismaClient) {
   const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 12);
-  const existing = await prisma.user.findUnique({ where: { email: DEMO_EMAIL } });
+  const identity = {
+    email: DEMO_EMAIL,
+    name: DEMO_NAME,
+    passwordHash,
+  };
 
-  if (existing) {
+  const byEmail = await prisma.user.findUnique({ where: { email: DEMO_EMAIL } });
+  if (byEmail) {
     return prisma.user.update({
-      where: { id: existing.id },
-      data: { passwordHash },
+      where: { id: byEmail.id },
+      data: identity,
+    });
+  }
+
+  const byUsername = await prisma.user.findUnique({ where: { username: DEMO_USERNAME } });
+  if (byUsername) {
+    return prisma.user.update({
+      where: { id: byUsername.id },
+      data: identity,
     });
   }
 
   return prisma.user.create({
     data: {
-      name: DEMO_NAME,
+      ...identity,
       username: DEMO_USERNAME,
-      email: DEMO_EMAIL,
-      passwordHash,
     },
   });
 }

@@ -37,16 +37,16 @@ export function SignInForm({
         <p className="mt-1 text-sm text-muted-foreground">Pick up the log where you left it.</p>
       </div>
       <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">
-          Demo account: demo@gymtracker.local / gymtracker. Data resets every night.
-        </p>
-        <button
+        <Button
           type="button"
+          variant="secondary"
+          size="lg"
+          className="w-full"
           onClick={fillDemoAccount}
-          className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
         >
           Use demo account
-        </button>
+        </Button>
+        <p className="text-sm text-muted-foreground">Demo data resets every night.</p>
       </div>
       <form action={formAction} className="space-y-4">
         <input type="hidden" name="callbackUrl" value={callbackUrl || "/dashboard"} />
@@ -60,6 +60,8 @@ export function SignInForm({
             autoComplete="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
+            className="h-11 text-base md:text-base"
+            style={{ fontSize: 16 }}
           />
         </div>
         <div className="space-y-2">
@@ -72,6 +74,8 @@ export function SignInForm({
             autoComplete="current-password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
+            className="h-11 text-base md:text-base"
+            style={{ fontSize: 16 }}
           />
         </div>
         {state.error && <p className="text-sm text-destructive">{state.error}</p>}
