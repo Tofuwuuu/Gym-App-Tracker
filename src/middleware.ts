@@ -23,9 +23,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Auth.js names the session cookie __Secure-authjs.session-token on HTTPS.
+  // getToken only looks for that name when secureCookie is true.
+  const secureCookie =
+    request.nextUrl.protocol === "https:" ||
+    request.headers.get("x-forwarded-proto") === "https";
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+    secureCookie,
   });
 
   if (!token) {
