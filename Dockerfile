@@ -10,6 +10,7 @@ FROM base AS deps
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
 ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/gymtracker?schema=public"
+ENV DIRECT_URL="postgresql://postgres:postgres@localhost:5432/gymtracker?schema=public"
 RUN npm ci
 
 FROM base AS builder
@@ -17,6 +18,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/gymtracker?schema=public"
+ENV DIRECT_URL="postgresql://postgres:postgres@localhost:5432/gymtracker?schema=public"
 RUN npx prisma generate
 RUN npm run build
 

@@ -2,8 +2,8 @@
 
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
-import { redirect } from "next/navigation";
 import { signIn, signOut } from "@/lib/auth";
+import { DEMO_EMAIL, DEMO_USERNAME } from "@/lib/demo-account";
 import { prisma } from "@/lib/db";
 import { signUpSchema } from "@/lib/validations";
 
@@ -29,6 +29,10 @@ export async function signUpAction(
 
   const email = parsed.data.email.toLowerCase();
   const username = parsed.data.username.toLowerCase();
+
+  if (email === DEMO_EMAIL || username === DEMO_USERNAME) {
+    return { error: "Email or username already in use" };
+  }
 
   const existing = await prisma.user.findFirst({
     where: {

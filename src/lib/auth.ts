@@ -4,20 +4,25 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
+import { getGoogleAuthCredentials } from "@/lib/google-auth";
 import { signInSchema } from "@/lib/validations";
+
+const google = getGoogleAuthCredentials();
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
+  trustHost: true,
+  secret: process.env.AUTH_SECRET,
   pages: {
     signIn: "/sign-in",
   },
   providers: [
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+    ...(google
       ? [
           Google({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            clientId: google.clientId,
+            clientSecret: google.clientSecret,
           }),
         ]
       : []),

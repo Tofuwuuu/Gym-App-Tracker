@@ -12,6 +12,11 @@ until node -e "const {PrismaClient}=require('@prisma/client');const p=new Prisma
   sleep 1
 done
 
+if [ -z "$DIRECT_URL" ]; then
+  echo "DIRECT_URL is unset; using DATABASE_URL for migrations."
+  export DIRECT_URL="$DATABASE_URL"
+fi
+
 echo "Running migrations..."
 npx prisma migrate deploy
 
