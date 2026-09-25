@@ -59,3 +59,26 @@ export function formatCompactVolume(volume: number) {
   }
   return `${Math.round(volume)} kg`;
 }
+
+export function localDateKey(date: Date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+/** Consecutive logged days ending today, or yesterday when today is empty. */
+export function consecutiveTrainingStreak(loggedDays: Iterable<string>, now = new Date()) {
+  const days = new Set(loggedDays);
+  let streak = 0;
+  const cursor = new Date(now.getTime());
+  cursor.setHours(0, 0, 0, 0);
+  if (!days.has(localDateKey(cursor))) {
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  while (days.has(localDateKey(cursor))) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
+}

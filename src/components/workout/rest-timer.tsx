@@ -10,15 +10,17 @@ export function RestTimer({ defaultSeconds = 90 }: { defaultSeconds?: number }) 
   const [running, setRunning] = useState(false);
 
   useEffect(() => {
-    if (!running) return;
-    if (remaining <= 0) {
-      setRunning(false);
-      return;
-    }
+    if (!running || remaining <= 0) return;
     const id = window.setInterval(() => {
-      setRemaining((r) => r - 1);
+      setRemaining((current) => (current <= 1 ? 0 : current - 1));
     }, 1000);
     return () => window.clearInterval(id);
+  }, [running, remaining]);
+
+  useEffect(() => {
+    if (!running || remaining > 0) return;
+    const id = window.setTimeout(() => setRunning(false), 0);
+    return () => window.clearTimeout(id);
   }, [running, remaining]);
 
   const mins = Math.floor(remaining / 60);

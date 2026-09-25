@@ -109,6 +109,10 @@ const demoSplits: Record<string, Array<{ name: string; sets: (week: number) => S
   ],
 };
 
+// Nine sessions across about three weeks, dated from `now` when the seed runs.
+// The latest three are today, yesterday, and the day before. The overview counts
+// consecutive logged days ending today (or yesterday, if today is empty), so that
+// tail stays above zero until the next nightly reset.
 const demoSessions = [
   { daysAgo: 20, split: "Push", week: 0 },
   { daysAgo: 18, split: "Pull", week: 0 },
@@ -116,9 +120,9 @@ const demoSessions = [
   { daysAgo: 13, split: "Push", week: 1 },
   { daysAgo: 11, split: "Pull", week: 1 },
   { daysAgo: 9, split: "Legs", week: 1 },
-  { daysAgo: 6, split: "Push", week: 2 },
-  { daysAgo: 4, split: "Pull", week: 2 },
-  { daysAgo: 2, split: "Legs", week: 2 },
+  { daysAgo: 2, split: "Push", week: 2 },
+  { daysAgo: 1, split: "Pull", week: 2 },
+  { daysAgo: 0, split: "Legs", week: 2 },
 ];
 
 export type DemoSeedResult = {
@@ -130,11 +134,32 @@ export type DemoSeedResult = {
   workoutCount: number;
 };
 
-function sessionStart(daysAgo: number) {
-  const started = new Date();
+function sessionStart(daysAgo: number, now = new Date()) {
+  const started = new Date(now.getTime());
   started.setHours(18, 10, 0, 0);
   started.setDate(started.getDate() - daysAgo);
   return started;
+}
+
+export type PlannedDemoSession = {
+  split: string;
+  week: number;
+  startedAt: Date;
+};
+
+export function planDemoSessions(now = new Date()): PlannedDemoSession[] {
+  return demoSessions.map((session) => ({
+    split: session.split,
+    week: session.week,
+    startedAt: sessionStart(session.daysAgo, now),
+  }));
+}
+
+export function demoWorkingSetCount() {
+  return demoSessions.reduce((total, session) => {
+    const plans = demoSplits[session.split];
+    return total + plans.reduce((sum, plan) => sum + plan.sets(session.week).length, 0);
+  }, 0);
 }
 
 async function seedExerciseLibrary(prisma: PrismaClient) {
@@ -237,9 +262,9 @@ async function createDemoWorkouts(
   exerciseIds: Map<string, string>,
   routineIds: Map<string, string>
 ) {
-  for (const session of demoSessions) {
+  for (const session of planDemoSessions()) {
     const plans = demoSplits[session.split];
-    const startedAt = sessionStart(session.daysAgo);
+    const startedAt = session.startedAt;
     const endedAt = new Date(startedAt.getTime() + 58 * 60 * 1000);
     await prisma.workout.create({
       data: {
