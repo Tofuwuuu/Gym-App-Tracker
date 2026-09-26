@@ -9,13 +9,13 @@ import {
   LayoutDashboard,
   LineChart,
   LogOut,
-  Menu,
   Plus,
   Users,
 } from "lucide-react";
 import { signOutAction } from "@/lib/actions/auth";
 import { cn } from "@/lib/utils";
 import { Wordmark } from "@/components/brand/brand-mark";
+import { MobileTabBar } from "@/components/layout/mobile-tab-bar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -23,13 +23,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 
 const navLinks = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -171,6 +164,10 @@ function SidebarBody({
   );
 }
 
+function isWorkoutInProgress(pathname: string) {
+  return /^\/workout\/(?!new$)[^/]+$/.test(pathname);
+}
+
 export function AppShell({
   username,
   name,
@@ -180,6 +177,9 @@ export function AppShell({
   name?: string | null;
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const workoutInProgress = isWorkoutInProgress(pathname);
+
   return (
     <div className="flex min-h-screen bg-background">
       <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col overflow-hidden border-r border-border bg-sidebar px-3 py-4 md:flex">
@@ -187,30 +187,17 @@ export function AppShell({
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur md:hidden">
-          <Link href="/dashboard">
-            <Wordmark compact />
-          </Link>
-          <Sheet>
-            <SheetTrigger
-              render={
-                <Button variant="outline" size="icon" aria-label="Open navigation" />
-              }
-            >
-              <Menu className="size-4" />
-            </SheetTrigger>
-            <SheetContent side="left" className="w-72 overflow-y-auto bg-sidebar p-4">
-              <SheetHeader className="sr-only">
-                <SheetTitle>Navigation</SheetTitle>
-              </SheetHeader>
-              <SidebarBody username={username} name={name} />
-            </SheetContent>
-          </Sheet>
-        </header>
-
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-5 md:px-8 md:py-7">
+        <main
+          className={cn(
+            "mx-auto w-full max-w-5xl flex-1 md:px-8 md:py-7",
+            workoutInProgress
+              ? "max-md:max-w-none max-md:px-0 max-md:py-0"
+              : "px-4 pt-5 pb-[calc(64px+env(safe-area-inset-bottom)+1.25rem)]"
+          )}
+        >
           {children}
         </main>
+        {workoutInProgress ? null : <MobileTabBar username={username} name={name} />}
       </div>
     </div>
   );

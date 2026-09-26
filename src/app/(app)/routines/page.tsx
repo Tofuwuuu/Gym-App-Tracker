@@ -24,7 +24,11 @@ export default async function RoutinesPage() {
         eyebrow="Templates"
         title="Routines"
         description="Saved splits you can start in one tap."
-        action={<Button render={<Link href="/routines/new" />}>New routine</Button>}
+        action={
+          <Button nativeButton={false} render={<Link href="/routines/new" />}>
+            New routine
+          </Button>
+        }
       />
 
       {routines.length === 0 ? (
@@ -48,6 +52,7 @@ export default async function RoutinesPage() {
                   </Button>
                 </form>
                 <Button
+                  nativeButton={false}
                   size="sm"
                   variant="outline"
                   render={<Link href={`/routines/${routine.id}/edit`} />}
