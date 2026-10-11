@@ -30,7 +30,7 @@ export function CreatorsCard() {
       >
         From creators
       </h2>
-      <ul className="-mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-1">
+      <ul className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 pl-1 pr-4">
         {videos.map((video) => (
           <li key={video.link} className="w-[78%] max-w-72 shrink-0 snap-start sm:w-64">
             <a
