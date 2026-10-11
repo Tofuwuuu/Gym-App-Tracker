@@ -20,6 +20,7 @@ import { startWorkout } from "@/lib/actions/gym";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { WorkoutHeatmap } from "@/components/charts/workout-heatmap";
 import { EquipmentUsageChart } from "@/components/charts/equipment-chart";
+import { CreatorsCard } from "@/components/dashboard/creators-card";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -131,6 +132,8 @@ export default async function DashboardPage() {
       />
 
       <div className="flex w-full flex-col gap-5">
+        <CreatorsCard />
+
         {/* Full-width slot above the stats for a future suggested next workout card. */}
         <div className="grid w-full grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border xl:grid-cols-4">
           <StatCard label="Total Sets" value={String(totalSets)} icon={Dumbbell} />
