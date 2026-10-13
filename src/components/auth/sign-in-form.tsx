@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import Link from "next/link";
+import { DEFAULT_AFTER_AUTH } from "@/lib/safe-next";
 import { signInAction, signInWithGoogle, type ActionResult } from "@/lib/actions/auth";
 import { Wordmark } from "@/components/brand/brand-mark";
 import { Button } from "@/components/ui/button";
@@ -12,10 +13,10 @@ import { DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/demo-account";
 const initial: ActionResult = {};
 
 export function SignInForm({
-  callbackUrl,
+  next,
   googleEnabled,
 }: {
-  callbackUrl?: string;
+  next: string;
   googleEnabled: boolean;
 }) {
   const [state, formAction, pending] = useActionState(signInAction, initial);
@@ -49,7 +50,7 @@ export function SignInForm({
         <p className="text-sm text-muted-foreground">Demo data resets every night.</p>
       </div>
       <form action={formAction} className="space-y-4">
-        <input type="hidden" name="callbackUrl" value={callbackUrl || "/dashboard"} />
+        <input type="hidden" name="next" value={next} />
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -86,6 +87,7 @@ export function SignInForm({
 
       {googleEnabled && (
         <form action={signInWithGoogle}>
+          <input type="hidden" name="next" value={next} />
           <Button type="submit" variant="outline" className="w-full" size="lg">
             Continue with Google
           </Button>
@@ -94,7 +96,7 @@ export function SignInForm({
 
       <p className="text-sm text-muted-foreground">
         No account?{" "}
-        <Link href="/sign-up" className="font-medium text-primary underline-offset-4 hover:underline">
+        <Link href={next === DEFAULT_AFTER_AUTH ? "/sign-up" : `/sign-up?next=${encodeURIComponent(next)}`} className="font-medium text-primary underline-offset-4 hover:underline">
           Create one
         </Link>
       </p>
