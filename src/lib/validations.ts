@@ -70,6 +70,8 @@ export const setEntrySchema = z.object({
 
 export const workoutSaveSchema = z.object({
   workoutId: z.string().min(1),
+  // Client-generated id for future dedupe of retried saves. Accepted and ignored for now.
+  clientId: z.string().uuid().optional(),
   notes: z.string().max(1000).optional(),
   exercises: z.array(
     z.object({

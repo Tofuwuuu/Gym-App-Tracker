@@ -123,7 +123,7 @@ test("migration converts stored kilogram weights to tenths without losing sets",
 });
 
 test("migration keeps current drafts as they are and is idempotent", () => {
-  const current = { version: 1, notes: "", exercises: [{ key: "k", exerciseId: "x", name: "Row", sets: three() }] };
+  const current = { version: 1, clientId: "7b0c1c9e-2f4e-4d3a-9b1a-0c8e5f6a7b8c", notes: "", exercises: [{ key: "k", exerciseId: "x", name: "Row", sets: three() }] };
   const once = migrateDraft(current);
   assert.deepEqual(once?.exercises[0].sets, three());
   assert.deepEqual(migrateDraft(once), once);
@@ -133,4 +133,13 @@ test("migration rejects unreadable data instead of guessing", () => {
   assert.equal(migrateDraft(null), null);
   assert.equal(migrateDraft({ exercises: "nope" }), null);
   assert.equal(migrateDraft({ exercises: [{ exerciseId: "x", name: "Row", sets: [{ weight: "60" }] }] }), null);
+});
+
+test("migration gives old drafts a clientId and keeps an existing one", () => {
+  const old = migrateDraft({ notes: "", exercises: [] }, () => "11111111-2222-4333-8444-555555555555");
+  assert.equal(old?.clientId, "11111111-2222-4333-8444-555555555555");
+  const kept = migrateDraft({ clientId: "7b0c1c9e-2f4e-4d3a-9b1a-0c8e5f6a7b8c", exercises: [] }, () => "x");
+  assert.equal(kept?.clientId, "7b0c1c9e-2f4e-4d3a-9b1a-0c8e5f6a7b8c");
+  const bad = migrateDraft({ clientId: "not-a-uuid", exercises: [] });
+  assert.match(bad?.clientId ?? "", /^[0-9a-f-]{36}$/);
 });

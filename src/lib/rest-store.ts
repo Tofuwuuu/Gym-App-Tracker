@@ -119,3 +119,7 @@ export function finishRest(state: RestState) {
 export function dismissRestOver() {
   clearOver();
 }
+
+export function getRestHref(): string | null {
+  return parseRest(read(REST_KEY))?.href ?? null;
+}

@@ -8,10 +8,12 @@ import { ExercisePicker, type ExerciseOption } from "@/components/workout/exerci
 import { Stepper } from "@/components/workout/stepper";
 import { SetRow } from "@/components/workout/set-row";
 import { skipRest, startRest, useRest } from "@/lib/rest-store";
+import { clearDraft, draftKey, runFinish } from "@/lib/finish";
 import {
   appendSet,
   formatTenths,
   migrateDraft,
+  newClientId,
   parseRepsInput,
   parseWeightInput,
   prefillFor,
@@ -46,7 +48,6 @@ import {
 export type LastTime = Array<{ weightTenths: number; reps: number }>;
 
 const UNDO_MS = 5000;
-const draftKey = (workoutId: string) => `gym:workout:${workoutId}:v1`;
 
 function formatElapsed(totalSeconds: number) {
   const safe = Math.max(0, totalSeconds);
@@ -97,6 +98,7 @@ export function ActiveWorkout({
 }) {
   const [exercises, setExercises] = useState<ExerciseDraft[]>(initialExercises);
   const [notes, setNotes] = useState(initialNotes);
+  const [clientId, setClientId] = useState<string | null>(null);
   const [activeKey, setActiveKey] = useState<string | null>(initialExercises[0]?.key ?? null);
   const [values, setValues] = useState<Values>(() =>
     prefillFor(initialExercises[0]?.sets ?? [], lastTime[initialExercises[0]?.exerciseId ?? ""]?.at(-1))
@@ -107,6 +109,7 @@ export function ActiveWorkout({
   const [pickerOpen, setPickerOpen] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
   const [restored, setRestored] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
   const [pending, startTransition] = useTransition();
   const listEnd = useRef<HTMLDivElement>(null);
   const seq = useRef(0);
@@ -128,6 +131,8 @@ export function ActiveWorkout({
     } catch {
       draft = null;
     }
+    // A workout's clientId is created once, when it starts on this device, and kept in the draft.
+    setClientId(draft?.clientId ?? newClientId());
     if (draft && draft.exercises.length > 0) {
       const first = draft.exercises[0];
       setExercises(draft.exercises);
@@ -142,14 +147,14 @@ export function ActiveWorkout({
   /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
-    if (!restored) return;
-    const draft: WorkoutDraft = { version: 1, exercises, notes };
+    if (!restored || !clientId) return;
+    const draft: WorkoutDraft = { version: 1, clientId, exercises, notes };
     try {
       window.localStorage.setItem(draftKey(workoutId), JSON.stringify(draft));
     } catch {
       /* storage full or blocked */
     }
-  }, [exercises, notes, restored, workoutId]);
+  }, [clientId, exercises, notes, restored, workoutId]);
 
   useEffect(() => {
     if (!undo) return;
@@ -242,11 +247,7 @@ export function ActiveWorkout({
   }
 
   function clearLocal() {
-    try {
-      window.localStorage.removeItem(draftKey(workoutId));
-    } catch {
-      /* ignore */
-    }
+    clearDraft(window.localStorage, workoutId);
     skipRest();
   }
 
@@ -265,6 +266,7 @@ export function ActiveWorkout({
     startTransition(async () => {
       const payload = {
         workoutId,
+        clientId: clientId ?? undefined,
         notes,
         exercises: exercises.map((ex) => ({
           exerciseId: ex.exerciseId,
@@ -277,17 +279,9 @@ export function ActiveWorkout({
           })),
         })),
       };
-      // On success the action redirects, so clear local state first and put it back on error.
-      clearLocal();
-      const result = await saveWorkout(payload);
-      if (result?.error) {
-        toast.error(result.error);
-        try {
-          window.localStorage.setItem(draftKey(workoutId), JSON.stringify({ version: 1, exercises, notes }));
-        } catch {
-          /* ignore */
-        }
-      }
+      // The draft and timer stay until the server confirms; failures show "Try again".
+      const result = await runFinish(() => saveWorkout(payload), clearLocal, `/history/${workoutId}`);
+      setSaveFailed(!result.ok);
     });
   }
 
@@ -296,6 +290,17 @@ export function ActiveWorkout({
   return (
     <div className="flex h-dvh flex-col md:h-[calc(100dvh-3.5rem)] md:overflow-hidden md:rounded-xl md:border md:border-border">
       <header className="shrink-0 border-b border-border bg-background/95 pt-[env(safe-area-inset-top)] backdrop-blur">
+        {saveFailed ? (
+          <div
+            role="alert"
+            className="mx-3 mt-3 flex items-center gap-3 rounded-xl border border-destructive/60 bg-destructive/10 py-2 pr-2 pl-4"
+          >
+            <p className="flex-1 text-sm">Couldn&apos;t save your workout. Your sets are still on this phone.</p>
+            <Button type="button" variant="outline" className="h-11 shrink-0" disabled={pending} onClick={finish}>
+              {pending ? "Saving..." : "Try again"}
+            </Button>
+          </div>
+        ) : null}
         <div className="flex h-14 items-center gap-2 px-3">
           <ElapsedClock startedAt={startedAt} />
           <div className="ml-auto flex items-center gap-1">
