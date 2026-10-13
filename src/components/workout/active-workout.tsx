@@ -67,7 +67,11 @@ function ElapsedClock({ startedAt }: { startedAt: string }) {
   const elapsed = Math.floor((now - new Date(startedAt).getTime()) / 1000);
 
   return (
-    <p className="font-mono text-xl font-semibold tabular-nums text-primary" aria-label="Elapsed time">
+    <p
+      className="font-mono text-xl font-semibold tabular-nums text-primary"
+      aria-label="Elapsed time"
+      suppressHydrationWarning
+    >
       {formatElapsed(elapsed)}
     </p>
   );

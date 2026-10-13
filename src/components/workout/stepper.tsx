@@ -104,7 +104,8 @@ export function Stepper({
                 event.currentTarget.blur();
               }
             }}
-            className="w-28 rounded-lg bg-transparent text-center font-mono text-4xl leading-tight font-bold tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            style={{ width: `${Math.max(1, (draft ?? display).length) + 0.4}ch` }}
+            className="min-w-0 rounded-lg bg-transparent text-center font-mono text-4xl leading-tight font-bold tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
           <span className="text-sm text-muted-foreground">{unit}</span>
         </span>
