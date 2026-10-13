@@ -4,7 +4,24 @@
  */
 
 export type SaveResult = { error?: string } | void | undefined;
-export type FinishResult = { ok: true } | { ok: false; message?: string };
+export const UNAUTHORIZED = "unauthorized";
+
+export type FailureReason = "unauthorized" | "error";
+export type FinishResult = { ok: true } | { ok: false; reason: FailureReason; message?: string };
+
+/** Copy and action for the box above Finish. */
+export function finishFailureNotice(reason: FailureReason, workoutId: string) {
+  if (reason === "unauthorized") {
+    return {
+      text: "You've been signed out. Sign in again to save your workout. Your sets are still on this phone.",
+      action: { label: "Sign in", href: `/sign-in?next=${encodeURIComponent(`/workout/${workoutId}`)}` },
+    } as const;
+  }
+  return {
+    text: "Couldn't save your workout. Your sets are still on this phone.",
+    action: { label: "Try again", href: null },
+  } as const;
+}
 
 export type DraftStorage = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 
@@ -51,9 +68,13 @@ export async function runFinish(
       if (savedPath === undefined || target === savedPath) onSaved();
       throw error;
     }
-    return { ok: false };
+    return { ok: false, reason: "error" };
   }
-  if (result && result.error) return { ok: false, message: result.error };
+  if (result && result.error) {
+    return result.error === UNAUTHORIZED
+      ? { ok: false, reason: "unauthorized" }
+      : { ok: false, reason: "error", message: result.error };
+  }
   onSaved();
   return { ok: true };
 }
