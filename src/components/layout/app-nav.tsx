@@ -16,6 +16,8 @@ import { signOutAction } from "@/lib/actions/auth";
 import { cn } from "@/lib/utils";
 import { Wordmark } from "@/components/brand/brand-mark";
 import { MobileTabBar } from "@/components/layout/mobile-tab-bar";
+import { RestBar } from "@/components/workout/rest-bar";
+import { useRest } from "@/lib/rest-store";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -179,6 +181,8 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   const workoutInProgress = isWorkoutInProgress(pathname);
+  const rest = useRest();
+  const restVisible = Boolean(rest.timer || rest.over);
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -192,12 +196,15 @@ export function AppShell({
             "mx-auto w-full max-w-5xl flex-1 md:px-8 md:py-7",
             workoutInProgress
               ? "max-md:max-w-none max-md:px-0 max-md:py-0"
-              : "px-4 pt-5 pb-[calc(64px+env(safe-area-inset-bottom)+1.25rem)]"
+              : restVisible
+                ? "px-4 pt-5 pb-[calc(120px+env(safe-area-inset-bottom)+1.25rem)] md:pb-24"
+                : "px-4 pt-5 pb-[calc(64px+env(safe-area-inset-bottom)+1.25rem)]"
           )}
         >
           {children}
         </main>
         {workoutInProgress ? null : <MobileTabBar username={username} name={name} />}
+        <RestBar aboveTabBar={!workoutInProgress} />
       </div>
     </div>
   );
