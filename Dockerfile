@@ -39,6 +39,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 # DB tooling for boot migrations + seed
 COPY --from=builder /app/prisma ./prisma
+# prisma/seed.ts imports these two modules
+COPY --from=builder /app/src/lib/demo-account.ts /app/src/lib/demo-seed.ts ./src/lib/
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
 
