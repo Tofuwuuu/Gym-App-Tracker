@@ -6,6 +6,7 @@ import { calculateVolume, formatDuration, formatSetLoad } from "@/lib/workout-ut
 import { LikeButton } from "@/components/social/social-actions";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
+import { ClearSavedWorkout } from "@/components/workout/clear-saved-workout";
 
 export default async function WorkoutDetailPage({
   params,
@@ -42,6 +43,7 @@ export default async function WorkoutDetailPage({
 
   return (
     <div className="space-y-5">
+      {workout.userId === user.id && workout.endedAt ? <ClearSavedWorkout workoutId={workout.id} /> : null}
       <PageHeader
         eyebrow={workout.user.username ? `@${workout.user.username}` : workout.user.name ?? "Session"}
         title={format(workout.startedAt, "EEEE, MMM d")}

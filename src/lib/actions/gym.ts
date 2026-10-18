@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/session";
+import { auth } from "@/lib/auth";
+import { UNAUTHORIZED } from "@/lib/finish";
 import { exerciseSchema, routineSchema, workoutSaveSchema } from "@/lib/validations";
 
 export type ActionResult = {
@@ -178,7 +180,11 @@ export async function startWorkout(routineId?: string | FormData) {
 }
 
 export async function saveWorkout(data: unknown): Promise<ActionResult> {
-  const user = await requireUser();
+  // An expired login returns a result instead of redirecting, so the client can
+  // keep the draft and offer "Sign in" (see finishFailureNotice).
+  const session = await auth();
+  const user = session?.user?.id ? { ...session.user, id: session.user.id } : null;
+  if (!user) return { error: UNAUTHORIZED };
   const parsed = workoutSaveSchema.safeParse(data);
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };

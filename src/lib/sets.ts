@@ -25,6 +25,8 @@ export type ExerciseDraft = {
 
 export type WorkoutDraft = {
   version: 1;
+  /** Generated on the device when the workout starts; sent with the save for future dedupe. */
+  clientId: string;
   exercises: ExerciseDraft[];
   notes: string;
 };
@@ -120,9 +122,15 @@ const isObj = (v: unknown): v is Record<string, unknown> => typeof v === "object
 /**
  * Reads a saved workout draft. Accepts the current shape (weightTenths) and the
  * older shape that stored `weight` in kilograms, converting it so nothing is lost.
- * Anything unreadable returns null and the caller falls back to server data.
+ * Drafts from before clientId get a new one. Anything unreadable returns null and the caller falls back to server data.
  */
-export function migrateDraft(raw: unknown): WorkoutDraft | null {
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function newClientId(): string {
+  return crypto.randomUUID();
+}
+
+export function migrateDraft(raw: unknown, makeId: () => string = newClientId): WorkoutDraft | null {
   if (!isObj(raw) || !Array.isArray(raw.exercises)) return null;
   const exercises: ExerciseDraft[] = [];
   for (const ex of raw.exercises) {
@@ -152,5 +160,6 @@ export function migrateDraft(raw: unknown): WorkoutDraft | null {
       sets,
     });
   }
-  return { version: 1, exercises, notes: typeof raw.notes === "string" ? raw.notes : "" };
+  const clientId = typeof raw.clientId === "string" && UUID.test(raw.clientId) ? raw.clientId : makeId();
+  return { version: 1, clientId, exercises, notes: typeof raw.notes === "string" ? raw.notes : "" };
 }

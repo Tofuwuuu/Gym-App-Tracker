@@ -6,6 +6,7 @@ import { signIn, signOut } from "@/lib/auth";
 import { DEMO_EMAIL, DEMO_USERNAME } from "@/lib/demo-account";
 import { prisma } from "@/lib/db";
 import { signUpSchema } from "@/lib/validations";
+import { safeNextPath } from "@/lib/safe-next";
 
 export type ActionResult = {
   error?: string;
@@ -59,7 +60,7 @@ export async function signUpAction(
     await signIn("credentials", {
       email,
       password: parsed.data.password,
-      redirectTo: "/dashboard",
+      redirectTo: safeNextPath(formData.get("next")),
     });
   } catch (error) {
     if (error instanceof AuthError) {
@@ -77,13 +78,13 @@ export async function signInAction(
 ): Promise<ActionResult> {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
-  const callbackUrl = String(formData.get("callbackUrl") ?? "/dashboard");
+  const next = safeNextPath(formData.get("next"));
 
   try {
     await signIn("credentials", {
       email,
       password,
-      redirectTo: callbackUrl,
+      redirectTo: next,
     });
   } catch (error) {
     if (error instanceof AuthError) {
@@ -99,6 +100,6 @@ export async function signOutAction() {
   await signOut({ redirectTo: "/" });
 }
 
-export async function signInWithGoogle() {
-  await signIn("google", { redirectTo: "/dashboard" });
+export async function signInWithGoogle(formData?: FormData) {
+  await signIn("google", { redirectTo: safeNextPath(formData?.get("next")) });
 }

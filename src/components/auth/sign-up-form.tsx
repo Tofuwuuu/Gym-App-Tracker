@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { DEFAULT_AFTER_AUTH } from "@/lib/safe-next";
 import { signUpAction, type ActionResult } from "@/lib/actions/auth";
 import { Wordmark } from "@/components/brand/brand-mark";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import { Label } from "@/components/ui/label";
 
 const initial: ActionResult = {};
 
-export function SignUpForm() {
+export function SignUpForm({ next }: { next: string }) {
   const [state, formAction, pending] = useActionState(signUpAction, initial);
 
   return (
@@ -23,6 +24,7 @@ export function SignUpForm() {
         <p className="mt-1 text-sm text-muted-foreground">Start a training log in under a minute.</p>
       </div>
       <form action={formAction} className="space-y-4">
+        <input type="hidden" name="next" value={next} />
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>
           <Input id="name" name="name" required />
@@ -46,7 +48,7 @@ export function SignUpForm() {
       </form>
       <p className="text-sm text-muted-foreground">
         Already training here?{" "}
-        <Link href="/sign-in" className="font-medium text-primary underline-offset-4 hover:underline">
+        <Link href={next === DEFAULT_AFTER_AUTH ? "/sign-in" : `/sign-in?next=${encodeURIComponent(next)}`} className="font-medium text-primary underline-offset-4 hover:underline">
           Sign in
         </Link>
       </p>
