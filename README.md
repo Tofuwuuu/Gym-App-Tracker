@@ -144,6 +144,22 @@ Copied from `.env.example`.
 
 Docker Compose overrides `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `NEXTAUTH_URL`, `AUTH_URL`, and `AUTH_TRUST_HOST` inside the web container (see `docker-compose.yml`). `DIRECT_URL` matches `DATABASE_URL` there because Compose uses one Postgres, not a pooler.
 
+## Run it locally
+
+You need Docker installed. Start the app and its database:
+
+```bash
+npm run docker:up
+```
+
+Then open http://localhost:3000. On first start it creates the tables and loads the exercise library. Nothing connects to the live site.
+
+It runs in the background. To stop it:
+
+```bash
+npm run docker:down
+```
+
 ## Deploying to Vercel
 
 Host the Next.js app on Vercel and the database on Neon, or on any standard pooled Postgres. Prisma Postgres also works. The current public deployment is [https://gym-app-tracker-gamma.vercel.app](https://gym-app-tracker-gamma.vercel.app).
