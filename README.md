@@ -150,7 +150,7 @@ Host the Next.js app on Vercel and the database on Neon, or on any standard pool
 
 ### Environment variables
 
-Set these on the Vercel project before the first build. `prisma migrate deploy` runs during the build, so `DATABASE_URL` and `DIRECT_URL` must exist then.
+Set these on the Vercel project before the first build.
 
 | Variable | Value |
 | --- | --- |
@@ -172,7 +172,17 @@ Local development uses one database. Set `DATABASE_URL` and `DIRECT_URL` to that
 The Vercel build command is `npm run vercel-build`:
 
 ```bash
-prisma generate && prisma migrate deploy && next build
+prisma generate && next build
+```
+
+The build does not touch the database. Preview and production builds share the same `DATABASE_URL`, so a migration in the build would run against the production database from any pushed branch.
+
+### Production migrations
+
+Migrations run on their own, never from a Vercel build. Docker Compose applies them on boot through `docker-entrypoint.sh`. For the production database, run this once from a trusted machine with the production `DIRECT_URL`, after the migration is reviewed and merged and before the code that needs it goes live:
+
+```bash
+DIRECT_URL="<production direct url>" DATABASE_URL="<production direct url>" npx prisma migrate deploy
 ```
 
 `postinstall` also runs `prisma generate`. Do not use `prisma db push` for this deploy. `npm run build` stays `prisma generate && next build` so the Docker image can compile without a database.
@@ -199,7 +209,7 @@ Railway Postgres still works if you set both `DATABASE_URL` and `DIRECT_URL` to 
 | --- | --- |
 | `npm run dev` | Local Next.js server |
 | `npm run build` | Generate the Prisma client and build for production |
-| `npm run vercel-build` | Generate the client, run `prisma migrate deploy`, and build (Vercel) |
+| `npm run vercel-build` | Generate the client and build (Vercel). No migrations. |
 | `npm run start` | Start the production server |
 | `npm run lint` | ESLint |
 | `npm run db:migrate` | Create and apply a Prisma migration (`prisma migrate dev`) |
