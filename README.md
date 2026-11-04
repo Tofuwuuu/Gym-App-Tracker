@@ -1,258 +1,100 @@
 # Gym Tracker
 
-A Strong/Hevy-style workout logger for lifters who want fast set logging, routine templates, and progress charts. A junior SE portfolio project.
-
-Log sets during a session, reuse routines, review history, and follow other lifters. Try it live, or run it locally with Docker Compose or Node and Postgres.
-
-## Demo
-
-Live app: https://gym-app-tracker-gamma.vercel.app
-
-On the sign-in page, tap **Use demo account**. You can log sets, build routines, and browse the charts. The demo data resets every night at 3 AM Manila time, so the streak and history stay current.
-
-![Landing](docs/screenshots/landing.png)
-
 ![Overview](docs/screenshots/overview.png)
 
-![Active workout](docs/screenshots/active-workout.png)
+A workout logger in the style of Strong and Hevy. Log sets fast, save routines, and watch your lifts go up on a chart.
 
+Live: https://gym-app-tracker-gamma.vercel.app. Tap **Use demo account** on the sign-in page. The demo data resets every night at 3 AM Manila time.
+
+## What it does
+
+- Email and password sign-in. Google shows up if you set the Google env vars.
+- 53 seeded exercises, plus your own.
+- Routine templates you can reuse.
+- Live workout logging with a rest timer.
+- History, training volume, estimated 1RM, personal records, and a training heatmap.
+- Profiles, follows, a feed, and likes.
+
+Built with Next.js 16, React 19, TypeScript, Prisma 6 on Postgres, Auth.js v5, Tailwind 4, shadcn/ui and Recharts. Hosted on Vercel with Neon.
+
+![Landing](docs/screenshots/landing.png)
+![Active workout](docs/screenshots/active-workout.png)
 ![Progress](docs/screenshots/progress.png)
 
+On a phone:
+
 ![Overview on a phone](docs/screenshots/overview-390.png)
-
-Overview on a phone.
-
 ![History on a phone](docs/screenshots/history-390.png)
-
-History on a phone.
-
 ![Progress on a phone](docs/screenshots/progress-390.png)
-
-Progress charts on a phone.
-
 ![Active workout on a phone](docs/screenshots/active-workout-390.png)
 
-Active workout with the rest timer.
+## Run it
 
-`npm run db:seed` also creates a local demo lifter (`demo@gymtracker.local` / `gymtracker`) with about three weeks of sessions so the progress charts are not a single dot.
-
-### Status
-
-- **Demo:** [live on Vercel](https://gym-app-tracker-gamma.vercel.app). Local Docker Compose or a native `npm run dev` server still works.
-- **Auth.js:** email and password work with `AUTH_SECRET` and the database alone. Google sign-in is optional and appears only when both `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` are set.
-
-## Features
-
-- Sign up and sign in with email and password (Google when those env vars are set)
-- Exercise library (53 seeded movements) plus custom exercises
-- Routine builder to save and reuse templates
-- Active workout logging with a rest timer
-- Workout history and detail views
-- Progress: training-volume chart, estimated 1RM, and personal records
-- Dashboard training heatmap
-- Social: profiles, follow and unfollow, a feed, and likes
-
-## Stack
-
-Versions match `package.json`.
-
-| Layer | Tech | Host |
-| --- | --- | --- |
-| App (UI + API) | Next.js 16 (App Router), React 19, TypeScript | Vercel |
-| Database | PostgreSQL, Prisma 6 | Neon |
-| Auth | Auth.js (NextAuth v5), email/password, optional Google | Vercel |
-| UI | Tailwind CSS 4, shadcn/ui | Vercel |
-| Charts | Recharts 3 | Vercel |
-
-## Setup
-
-Node.js 20+ matches the Docker image. Postgres 16 matches `docker-compose.yml`.
-
-### Option A: Docker Compose
-
-Docker Compose starts the app and Postgres. You do not need a local `.env` for this path; the compose file injects one local database URL as both `DATABASE_URL` and `DIRECT_URL`, plus a dev `AUTH_SECRET`.
-
-1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine with Compose v2).
-2. From the repo root, build and start both services:
-
-   ```bash
-   docker compose up --build
-   ```
-
-   Detached equivalent: `npm run docker:up`.
-
-3. Open [http://localhost:3000](http://localhost:3000).
-4. Postgres is on `localhost:5432` (`postgres` / `postgres` / `gymtracker`).
-5. On boot the web container waits for Postgres, runs `prisma migrate deploy`, and seeds the exercise library plus a demo lifter with sample history.
+With Docker:
 
 ```bash
-docker compose down          # stop
-docker compose down -v       # stop and wipe the database volume
-docker compose logs -f web   # follow app logs (or npm run docker:logs)
-npm run docker:down          # stop via the npm script
+cp .env.example .env
+docker compose up --build
+npx prisma migrate deploy
+npm run db:seed
 ```
 
-### Option B: Native
+The web container already runs the migration and seed on boot, so the last two are only needed if you're running them yourself. Compose sets its own database URL and dev `AUTH_SECRET`. Open http://localhost:3000. Postgres is on `localhost:5432` (`postgres` / `postgres` / `gymtracker`). If you already run Postgres on 5432, stop it first or the ports will clash.
 
-1. Install Node.js 20+ and PostgreSQL 16 (or point `DATABASE_URL` and `DIRECT_URL` at a hosted Postgres).
-2. Install dependencies:
+The seed creates a demo lifter, `demo@gymtracker.local` / `gymtracker`, with about three weeks of sessions.
 
-   ```bash
-   npm install
-   ```
+Stop with `docker compose down`. Add `-v` to wipe the database. There are npm shortcuts too: `npm run docker:up`, `docker:down`, `docker:logs`.
 
-3. Configure environment:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-   Fill in the variables in the table below. Generate a secret with `openssl rand -base64 32`.
-
-4. Apply the baseline migration and seed the exercise library plus the demo lifter:
-
-   ```bash
-   npx prisma migrate deploy
-   npm run db:seed
-   ```
-
-   `npm run db:push` is only for local experiments. Deploys use `prisma migrate deploy`.
-
-5. Start the dev server:
-
-   ```bash
-   npm run dev
-   ```
-
-6. Open [http://localhost:3000](http://localhost:3000).
-
-### Environment variables
-
-Copied from `.env.example`.
-
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `DATABASE_URL` | Yes | Pooled runtime Postgres URL. Locally and in Docker, the single database URL. On Neon, the pooler host. For PgBouncer, add `pgbouncer=true` and `connection_limit=1` if they are not already in the string. |
-| `DIRECT_URL` | Yes | Direct, unpooled URL for `prisma migrate deploy`. Neon often names this `DATABASE_URL_UNPOOLED`; copy that value here. Locally and in Docker, set it to the same URL as `DATABASE_URL`. |
-| `AUTH_SECRET` | Yes | Auth.js signing secret (`openssl rand -base64 32`). |
-| `AUTH_URL` | Yes | Public origin, no trailing slash. Local: `http://localhost:3000`. Production: `https://<your-domain>`. |
-| `NEXTAUTH_URL` | Recommended | Same origin as `AUTH_URL`. Auth.js still reads this alias. |
-| `AUTH_TRUST_HOST` | Recommended | `true` when the host is forwarded (Docker, Vercel). The Auth.js config also sets `trustHost`. |
-| `AUTH_GOOGLE_ID` | No | Google OAuth client id. The Google button stays hidden when this or the secret is unset. |
-| `AUTH_GOOGLE_SECRET` | No | Google OAuth client secret. |
-| `CRON_SECRET` | Yes in production | Bearer token for `GET /api/cron/reset-demo`. |
-
-Docker Compose overrides `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `NEXTAUTH_URL`, `AUTH_URL`, and `AUTH_TRUST_HOST` inside the web container (see `docker-compose.yml`). `DIRECT_URL` matches `DATABASE_URL` there because Compose uses one Postgres, not a pooler.
-
-## Run it locally
-
-You need Docker installed. Start the app and its database:
+Without Docker you need Node 20+ and Postgres 16:
 
 ```bash
-npm run docker:up
+npm install
+cp .env.example .env   # fill in DATABASE_URL, DIRECT_URL, AUTH_SECRET, AUTH_URL
+npx prisma migrate deploy
+npm run db:seed
+npm run dev
 ```
 
-Then open http://localhost:3000. On first start it creates the tables and loads the exercise library. Nothing connects to the live site.
+Make a secret with `openssl rand -base64 32`. Locally, `DATABASE_URL` and `DIRECT_URL` are the same URL.
 
-It runs in the background. To stop it:
+## Env
 
-```bash
-npm run docker:down
-```
-
-## Deploying to Vercel
-
-Host the Next.js app on Vercel and the database on Neon, or on any standard pooled Postgres. Prisma Postgres also works. The current public deployment is [https://gym-app-tracker-gamma.vercel.app](https://gym-app-tracker-gamma.vercel.app).
-
-### Environment variables
-
-Set these on the Vercel project before the first build.
-
-| Variable | Value |
+| Variable | Notes |
 | --- | --- |
-| `DATABASE_URL` | Pooled runtime URL. Neon: the host with `-pooler`. Add `pgbouncer=true` and `connection_limit=1` when the URL does not already include them. |
-| `DIRECT_URL` | Direct URL (Neon: `DATABASE_URL_UNPOOLED`, or the host without `-pooler`). |
-| `AUTH_SECRET` | `openssl rand -base64 32` |
-| `AUTH_URL` | `https://<your-domain>` (no trailing slash). Same value for `NEXTAUTH_URL`. |
-| `AUTH_TRUST_HOST` | `true` |
-| `CRON_SECRET` | Long random string. Vercel Cron sends it as `Authorization: Bearer <CRON_SECRET>`. |
-| `AUTH_GOOGLE_ID` | Optional. Omit both Google variables to hide the button. |
-| `AUTH_GOOGLE_SECRET` | Optional Google client secret. |
+| `DATABASE_URL` | Pooled Postgres URL. On Neon, the `-pooler` host. For PgBouncer add `pgbouncer=true&connection_limit=1`. |
+| `DIRECT_URL` | Unpooled URL, used by migrations. Neon calls it `DATABASE_URL_UNPOOLED`. |
+| `AUTH_SECRET` | Required. |
+| `AUTH_URL` | Public origin, no trailing slash. Set `NEXTAUTH_URL` to the same. |
+| `AUTH_TRUST_HOST` | `true` behind Docker or Vercel. |
+| `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` | Optional. Both must be set for the Google button. |
+| `CRON_SECRET` | Required in production, for the demo reset cron. |
 
-Google callback URL for a new domain: `https://<your-domain>/api/auth/callback/google`
+## Deploying
 
-Local development uses one database. Set `DATABASE_URL` and `DIRECT_URL` to that same URL (see `.env.example`). Docker Compose does this for you.
+Vercel runs `npm run vercel-build`, which is `prisma generate && next build`. It never touches the database, because preview and production share one `DATABASE_URL` and a migration in the build would hit production from any branch.
 
-### Build
-
-The Vercel build command is `npm run vercel-build`:
-
-```bash
-prisma generate && next build
-```
-
-The build does not touch the database. Preview and production builds share the same `DATABASE_URL`, so a migration in the build would run against the production database from any pushed branch.
-
-### Production migrations
-
-Migrations run on their own, never from a Vercel build. Docker Compose applies them on boot through `docker-entrypoint.sh`. For the production database, run this once from a trusted machine with the production `DIRECT_URL`, after the migration is reviewed and merged and before the code that needs it goes live:
+Run production migrations by hand, after the change is merged and before the code that needs it ships:
 
 ```bash
 DIRECT_URL="<production direct url>" DATABASE_URL="<production direct url>" npx prisma migrate deploy
 ```
 
-`postinstall` also runs `prisma generate`. Do not use `prisma db push` for this deploy. `npm run build` stays `prisma generate && next build` so the Docker image can compile without a database.
+Don't use `prisma db push` there. Google callback for a new domain: `https://<your-domain>/api/auth/callback/google`.
 
-### Demo account and nightly reset
-
-The public demo lifter is `demo@gymtracker.local` / `gymtracker`. Visitors can log sets. They cannot change that account's email or password, or delete it. `vercel.json` schedules `GET /api/cron/reset-demo` daily at `0 19 * * *` (19:00 UTC, which is 03:00 in Manila).
-
-That route deletes only the demo user's workouts, sets, routines, custom exercises, and follows or likes that involve the demo user, then recreates about three weeks of sessions dated from the current day. It also restores the demo user's email, name, and password, and creates the demo user again if that row is missing. Other accounts are left alone. If the exercise library or demo user is missing, the same request creates them, so the first cron call or a manual request bootstraps a fresh database:
+`vercel.json` calls `GET /api/cron/reset-demo` at `0 19 * * *` (03:00 Manila). It wipes and rebuilds only the demo user's data and restores its login. Visitors can't change the demo account's email or password or delete it. The same route bootstraps an empty database:
 
 ```bash
 curl -H "Authorization: Bearer $CRON_SECRET" https://<your-domain>/api/cron/reset-demo
 ```
 
-`npm run db:seed` calls the same module. You can run it with production `DATABASE_URL` and `DIRECT_URL` if you prefer a one-off seed from your machine. The reset route is the path that also wipes and rebuilds demo history.
-
-### Railway
-
-Railway Postgres still works if you set both `DATABASE_URL` and `DIRECT_URL` to the public URL (`DATABASE_PUBLIC_URL`). Free and trial instances can sleep when idle. After a cold start, retry once the database is awake.
-
-## Scripts
-
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Local Next.js server |
-| `npm run build` | Generate the Prisma client and build for production |
-| `npm run vercel-build` | Generate the client and build (Vercel). No migrations. |
-| `npm run start` | Start the production server |
-| `npm run lint` | ESLint |
-| `npm run db:migrate` | Create and apply a Prisma migration (`prisma migrate dev`) |
-| `npm run db:push` | Push the schema without a migration file |
-| `npm run db:seed` | Seed the exercise library and demo lifter history |
-| `npm run db:studio` | Open Prisma Studio |
-| `npm run docker:up` | `docker compose up --build -d` |
-| `npm run docker:down` | Stop the Compose stack |
-| `npm run docker:logs` | Follow web container logs |
-
-## Project structure
-
-```
-prisma/           # schema, migrations, seed
-src/app/(auth)/   # sign-in / sign-up
-src/app/(app)/    # dashboard, workout, routines, history, progress, exercises, feed, profile
-src/components/   # UI, workout, charts, social
-src/lib/          # auth, db, validations, server actions
-```
+Railway Postgres works too if both URLs point at `DATABASE_PUBLIC_URL`. Free instances sleep, so retry after a cold start.
 
 ## Notes
 
-- Estimated 1RM uses the Epley formula: `weight × (1 + reps / 30)`, rounded to one decimal. A one-rep set returns the weight itself (`src/lib/workout-utils.ts`).
-- Warmup sets are excluded from volume when `isWarmup` is set. Sets that are not completed are excluded as well.
-- Completed workouts from people you follow, plus your own completed workouts, appear on `/feed`.
-- Email/password is the default Auth.js provider. Google is registered only when both `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` are present. `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` still work when the `AUTH_GOOGLE_*` pair is unset.
+- Estimated 1RM is Epley, `weight × (1 + reps / 30)`, one decimal. A single rep returns the weight (`src/lib/workout-utils.ts`).
+- Warmup sets and unfinished sets don't count toward volume.
+- `/feed` shows your finished workouts and those of people you follow.
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` still work if the `AUTH_GOOGLE_*` pair isn't set.
+- Other scripts: `lint`, `db:migrate`, `db:push` (local experiments only), `db:studio`.
 
-## License
-
-[MIT](LICENSE).
+MIT licensed.
